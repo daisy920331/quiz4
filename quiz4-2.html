@@ -285,45 +285,54 @@
 
   // ===== Questions from your image =====
   // answer: true = 可以 (interchangeable), false = 不可以 (not interchangeable)
-  const QUESTIONS = [
-    {
-      id: 1,
-      g: ["lingwai"], // grammar focus (optional)
-      a: "他們想在河邊建立一座小橋。",
-      b: "他們想在河邊堵住一座小橋。",
-      answer: false,
-      explainZh: "「建立」是建造/設立（build/establish），可以用在「建立一座小橋」這種建造行為。但「堵住」是把通道塞住、阻擋（block/stop up），意思會變成「把一座小橋堵住」，語意不合，也不自然。所以兩句不能互換。",
-      explainEn: "“建立” means to build/establish, so it works for “建立一座小橋.”However, “堵住” means to block/stop up a passage, which would make the sentence mean “to block a bridge,” which is unnatural and changes the meaning.
-So the two sentences are not interchangeable."
-    },
-    {
-      id: 2,
-      g: ["yushi","lingwai"],
-      a: "他完成工作，於是回家休息。",
-      b: "他完成工作，另外回家休息。",
-      answer: false,
-      explainZh: "「於是」表示因果結果：完成工作 → 回家休息。 「另外」是補充資訊，不表示結果，因此語意不同，不能互換。",
-      explainEn: "“於是” shows cause→result: finished work → went home to rest. “另外” adds extra information and does not show a result, so they are not interchangeable."
-    },
-    {
-      id: 3,
-      g: [],
-      a: "他承諾會完成這份工作。",
-      b: "他答應會完成這份工作。",
-      answer: true,
-      explainZh: "「承諾」和「答應」都表示同意並願意做某事，這裡語意相近，可以互換（語氣上承諾更正式）。",
-      explainEn: "Both “承諾” and “答應” mean agreeing to do something. Here they are close in meaning, so they can be interchangeable (承諾 is more formal)."
-    },
-    {
-      id: 4,
-      g: ["jishi","yushi"],
-      a: "即使下雨，我們也出門了。",
-      b: "下雨了，於是我們出門了。",
-      answer: false,
-      explainZh: "「即使…也…」表示條件不影響結果（仍然出門）；「於是」表示因果結果（因為下雨所以出門）語意反而怪，所以不能互換。",
-      explainEn: "“即使…也…” means the result stays the same despite the condition (still went out). “於是” means cause→result (because it rained, so we went out), which is odd here. Not interchangeable."
-    }
-  ];
+ const QUESTIONS = [
+  {
+    id: 1,
+    g: [],
+    a: "他們想在河邊建立一座小橋。",
+    b: "他們想在河邊堵住一座小橋。",
+    answer: false,
+    explainZh: `「建立」是建造／設立（build/establish），可以用在「建立一座小橋」這種建造行為。
+但「堵住」是把通道塞住、阻擋（block/stop up），意思會變成「把一座小橋堵住」，語意不合，也不自然。
+所以兩句不能互換。`,
+    explainEn: `“建立” means to build/establish, so it works for “建立一座小橋.”
+However, “堵住” means to block/stop up a passage, which would make the sentence mean “to block a bridge,” which is unnatural and changes the meaning.
+So the two sentences are not interchangeable.`
+  },
+  {
+    id: 2,
+    g: ["yushi","lingwai"],
+    a: "他完成工作，於是回家休息。",
+    b: "他完成工作，另外回家休息。",
+    answer: false,
+    explainZh: `「於是」表示因果結果：完成工作 → 回家休息。
+「另外」是補充資訊，不表示結果，因此語意不同，不能互換。`,
+    explainEn: `“於是” shows cause → result: finished work → went home to rest.
+“另外” adds extra information and does not show a result, so they are not interchangeable.`
+  },
+  {
+    id: 3,
+    g: [],
+    a: "他承諾會完成這份工作。",
+    b: "他答應會完成這份工作。",
+    answer: true,
+    explainZh: `「承諾」和「答應」都表示同意並願意做某事，這裡語意相近，可以互換（語氣上「承諾」更正式）。`,
+    explainEn: `Both “承諾” and “答應” mean agreeing to do something.
+Here they are close in meaning, so they can be interchangeable (“承諾” is more formal).`
+  },
+  {
+    id: 4,
+    g: ["jishi","yushi"],
+    a: "即使下雨，我們也出門了。",
+    b: "下雨了，於是我們出門了。",
+    answer: false,
+    explainZh: `「即使…也…」表示條件不影響結果（仍然出門）。
+「於是」表示因果結果（因為下雨所以出門）語意反而怪，所以不能互換。`,
+    explainEn: `“即使…也…” means the result stays the same despite the condition (still went out).
+“於是” means cause → result (“because it rained, so we went out”), which is odd here.
+Not interchangeable.`
+  }
+];
 
   // ===== State =====
   let deck = [];
