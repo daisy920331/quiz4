@@ -1,256 +1,754 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>第四課・練習四｜排序＋句意判斷</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第四課・練習三：排序＋找證據</title>
+  <style>
+    :root{
+      /* Lesson 4 – 深色系（與你的 lesson4/index 一致） */
+      --bg:#3f5f7f;
+      --bg2:#2f4b66;
+      --card:#ffffff;
+      --ink:#07121f;
+      --muted:#2c435c;
+      --brand:#0f172a;
+      --accent:#083344;
+      --line:#587fa1;
+      --soft:#d6e6f3;
 
-<style>
-:root{
-  --bg:#4f7aa2;
-  --bg2:#3d6388;
-  --card:#ffffff;
-  --ink:#0b1726;
-  --muted:#35526e;
-  --line:#6b93b5;
-  --brand:#0f172a;
-  --accent:#083344;
-  --soft:#e0edf7;
-  --good:#16a34a;
-  --bad:#dc2626;
-}
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
-  background:linear-gradient(180deg,var(--bg2),var(--bg));
-  color:var(--ink);
-}
-.wrap{max-width:960px;margin:auto;padding:20px;}
-.card{
-  background:var(--card);
-  border-radius:20px;
-  padding:18px;
-  box-shadow:0 16px 40px rgba(0,0,0,.25);
-}
-h1{margin:0 0 6px;font-size:26px;font-weight:950;}
-.sub{color:var(--muted);font-weight:850;margin-bottom:14px;}
-.section{margin-top:18px;}
-.section h2{
-  font-size:18px;
-  font-weight:950;
-  color:var(--accent);
-  margin-bottom:8px;
-}
-.passage{
-  background:#f8fafc;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px 14px;
-  line-height:1.8;
-  font-weight:850;
-  white-space:pre-line;
-}
-.list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
-.item{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px 14px;
-  font-weight:950;
-  cursor:grab;
-}
-.btn{
-  padding:12px 16px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:var(--brand);
-  color:#fff;
-  font-weight:950;
-  cursor:pointer;
-}
-.btn.secondary{background:#fff;color:var(--brand);}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.feedback{
-  margin-top:10px;
-  padding:12px 14px;
-  border-radius:14px;
-  font-weight:900;
-  display:none;
-}
-.feedback.ok{display:block;background:#f0fdf4;color:#166534;}
-.feedback.no{display:block;background:#fef2f2;color:#991b1b;}
+      --good:#16a34a;
+      --bad:#dc2626;
+      --info:#0b3a66;
+    }
 
-.sBank{
-  border:1px solid var(--line);
-  background:#f8fafc;
-  border-radius:16px;
-  padding:12px 14px;
-  margin-top:10px;
-}
-.sSent{
-  display:block;
-  width:100%;
-  text-align:left;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:10px 12px;
-  margin:6px 0;
-  font-weight:900;
-  cursor:pointer;
-}
-.sSent.selected{
-  border-color:var(--good);
-  box-shadow:0 0 0 3px rgba(22,163,74,.2);
-}
-textarea{
-  width:100%;
-  min-height:70px;
-  margin-top:8px;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  font-weight:850;
-}
-</style>
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, var(--bg2), var(--bg));
+      color: var(--ink);
+    }
+    .wrap{ max-width: 980px; margin:0 auto; padding:20px; }
+
+    .header{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap; margin-bottom:14px;
+    }
+    .title{ font-size:26px; font-weight:950; margin:0; }
+    .subtitle{
+      font-size:15px; font-weight:850; color:var(--muted);
+      margin-top:6px; line-height:1.5;
+    }
+    .stats{ display:flex; gap:10px; flex-wrap:wrap; }
+    .pill{
+      background:#f1f5f9;
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:950;
+      color:#0b2239;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+
+    .blockTitle{
+      font-size:18px;
+      font-weight:950;
+      color:var(--accent);
+      margin:0 0 10px;
+      line-height:1.3;
+    }
+
+    .passage{
+      border:1px solid var(--line);
+      background:#f8fafc;
+      border-radius:16px;
+      padding:12px 14px;
+      line-height:1.85;
+      font-weight:850;
+      color:#0b2239;
+      white-space:pre-line;
+    }
+
+    .divider{ height:1px; background:rgba(88,127,161,.35); margin:16px 0; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+
+    .btn{
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:var(--brand);
+      color:#fff;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .btn.secondary{ background:#fff; color:var(--brand); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .feedback{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      display:none;
+      font-weight:950;
+      line-height:1.55;
+      white-space:pre-line;
+    }
+    .feedback.ok{ display:block; background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
+    .feedback.no{ display:block; background:#fef2f2; color:#991b1b; border-color:#fecaca; }
+    .feedback.info{ display:block; background:#eff6ff; color:#0b3a66; border-color:#bfdbfe; }
+
+    /* ===== Sort (drag) ===== */
+    .sortHint{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:850;
+      line-height:1.45;
+      margin-top:-4px;
+    }
+    .list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:10px;
+    }
+    .item{
+      border:1px solid var(--line);
+      background:#ffffff;
+      border-radius:16px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:950;
+      cursor:grab;
+      user-select:none;
+      touch-action:none;
+    }
+    .item:active{ cursor:grabbing; }
+    .handle{
+      width:34px; height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--soft);
+      display:grid; place-items:center;
+      font-weight:950;
+      color:#0b2239;
+      flex:0 0 auto;
+    }
+    .dragging{
+      opacity:.7;
+      outline: 3px solid rgba(147,197,253,.5);
+    }
+
+    /* ===== TF + Sentence bank ===== */
+    .tfBox{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      background:#ffffff;
+      margin-top:10px;
+    }
+    .statement{
+      font-weight:950;
+      line-height:1.6;
+    }
+    .tfRow{
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .tfBtn{
+      flex:1;
+      text-align:center;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:950;
+      cursor:pointer;
+      transition:.15s;
+      user-select:none;
+    }
+    .tfBtn:hover{ border-color:#93c5fd; background:#f8fafc; }
+    .tfBtn.active{
+      border-color:#93c5fd;
+      box-shadow:0 0 0 3px rgba(147,197,253,.35);
+    }
+    .tfBtn:disabled{ opacity:.7; cursor:not-allowed; }
+
+    .bank{
+      border:1px solid var(--line);
+      background:#f8fafc;
+      border-radius:16px;
+      padding:12px 14px;
+      margin-top:10px;
+    }
+    .bankHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .bankTitle{
+      font-weight:950;
+      color:var(--accent);
+      line-height:1.3;
+    }
+    .bankHint{
+      font-size:12px;
+      font-weight:850;
+      color:#315a7d;
+      margin-top:4px;
+    }
+    .toggleBtn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .para{ margin:10px 0 0; }
+    .sent{
+      display:block;
+      width:100%;
+      text-align:left;
+      border:1px solid var(--line);
+      background:#ffffff;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:900;
+      line-height:1.65;
+      cursor:pointer;
+      margin:8px 0;
+    }
+    .sent:hover{ border-color:#93c5fd; background:#f8fafc; }
+    .sent.selected{
+      border-color: var(--good);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.18);
+    }
+
+    .pickedBox{
+      margin-top:10px;
+      border:1px dashed rgba(88,127,161,.8);
+      background:#ffffff;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:850;
+      line-height:1.6;
+      color:#0b2239;
+      white-space:pre-line;
+      min-height:44px;
+    }
+    .pickedLabel{
+      margin-top:10px;
+      font-size:13px;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    @media (max-width:600px){
+      .wrap{ padding:14px; }
+      .title{ font-size:24px; }
+      .btn{ width:100%; }
+      .tfBtn{ padding:16px 14px; font-size:18px; }
+      .item{ padding:16px 14px; }
+      .handle{ width:40px; height:40px; }
+    }
+  </style>
 </head>
 
 <body>
 <div class="wrap">
-<div class="card">
+  <div class="header">
+    <div>
+      <h1 class="title">第四課・練習三：排序＋找證據</h1>
+      <div class="subtitle">
+        先閱讀短文，再完成：① 排序 ② 句意判斷（用文章句子當證據）。<br>
+        <span style="font-size:13px; color:#35526e; font-weight:850;">
+          Read first, then: (1) order events (2) judge meaning using evidence sentences.
+        </span>
+      </div>
+    </div>
+    <div class="stats">
+      <span class="pill">分數 Score：<span id="score">0</span></span>
+      <span class="pill">進度 Progress：<span id="progress">0/3</span></span>
+    </div>
+  </div>
 
-<h1>第四課・練習四</h1>
-<div class="sub">
-排序事件＋句意判斷（找證據）<br>
-<span style="font-size:13px;">Ordering events & selecting evidence sentences</span>
-</div>
-
-<div class="section">
-<h2>閱讀短文</h2>
-<div class="passage" id="passage"></div>
-</div>
-
-<div class="section">
-<h2>① 排序題</h2>
-<ul class="list" id="sortList"></ul>
-<div class="row">
-<button class="btn" onclick="checkSort()">檢查排序</button>
-</div>
-<div id="sortFb" class="feedback"></div>
-</div>
-
-<div class="section">
-<h2>② 句意判斷 1</h2>
-<p><b>阿哲一開始就不害怕。</b></p>
-
-<div class="sBank" id="bank1"></div>
-
-<textarea id="ev1" placeholder="請點選上方句子"></textarea>
-<button class="btn" onclick="checkTF1()">檢查</button>
-<div id="fb1" class="feedback"></div>
-</div>
-
-<div class="section">
-<h2>③ 句意判斷 2</h2>
-<p><b>村民只想離開，不想重建。</b></p>
-
-<div class="sBank" id="bank2"></div>
-
-<textarea id="ev2" placeholder="請點選上方句子"></textarea>
-<button class="btn" onclick="checkTF2()">檢查</button>
-<div id="fb2" class="feedback"></div>
-</div>
-
-</div>
+  <div class="card" id="card"></div>
 </div>
 
 <script>
-const PASSAGE_TEXT =
-`大雨下了好幾天，河水慢慢上升，村子開始被水淹沒。
+  // ===== Passage =====
+  const PASSAGE = `大雨下了好幾天，河水慢慢上升，村子開始被水淹沒。
 
-這場災難讓大家非常不安，阿哲也是其中一個，但他沒有逃走。
-即使情況危險，他也選擇留下來幫忙。
+這場災難讓大家非常不安，阿哲也是其中一個，但他沒有逃走。即使情況危險，他也選擇留下來幫忙。他答應村民，會盡力幫忙修補破掉的地方。
 
-經過長時間努力，水勢終於變小。
-於是大家開始清理村子。
-有人提出要重新建立家園，大家決定讓這場災難成為新的開始。`;
+經過長時間努力，水勢終於變小。於是大家開始清理村子。有人提出要重新建立家園，因為不是離開這個地方，大家決定讓這場災難成為新的開始。`;
 
-document.getElementById("passage").textContent = PASSAGE_TEXT;
+  // ===== Sorting items (你之前確認過的順序) =====
+  const SORT_ITEMS = [
+    { id:"water_small", text:"水勢變小" },
+    { id:"village_flood", text:"村子被淹沒" },
+    { id:"clean_up", text:"大家開始清理" },
+    { id:"azhe_help", text:"阿哲留下來幫忙" }
+  ];
+  const SORT_ANSWER = ["village_flood","azhe_help","water_small","clean_up"];
 
-const sentences = PASSAGE_TEXT.split(/(?<=[。])/);
+  // ===== TF statements =====
+  const TF = [
+    {
+      id:"tf1",
+      statementZh:"阿哲一開始就不害怕。",
+      statementEn:"A-Zhe was not afraid from the beginning.",
+      // ✅ 你的要求：tf1 不檢查對錯，只要證據來自文章即可
+      relaxedMode: "evidence_only",
+      passHintZh:"只要你有選到文章中的句子當證據，就會通過。",
+      passHintEn:"You will pass as long as you select a sentence from the passage as evidence."
+    },
+    {
+      id:"tf2",
+      statementZh:"村民只想離開，不想重建。",
+      statementEn:"The villagers only wanted to leave and did not want to rebuild.",
+      // ✅ 放寬：意思相近就給過（不強制對錯）
+      relaxedMode: "meaning_similar",
+      passHintZh:"證據句意思相近就通過（即使你按錯對/錯也可以過）。",
+      passHintEn:"You will pass if your evidence has a similar meaning (even if your True/False choice is wrong)."
+    }
+  ];
 
-function renderBank(id){
-  const box=document.getElementById(id);
-  sentences.forEach(s=>{
-    const b=document.createElement("button");
-    b.className="sSent";
-    b.textContent=s.trim();
-    b.onclick=()=>{
-      const ta=document.getElementById(id==="bank1"?"ev1":"ev2");
-      ta.value=s.trim();
-      b.classList.toggle("selected");
-    };
-    box.appendChild(b);
-  });
-}
-renderBank("bank1");
-renderBank("bank2");
-
-// 排序
-const sortItems=["水勢變小","村子被淹沒","大家開始清理","阿哲留下來幫忙"];
-const answer=["村子被淹沒","阿哲留下來幫忙","水勢變小","大家開始清理"];
-const ul=document.getElementById("sortList");
-sortItems.sort(()=>Math.random()-.5).forEach(t=>{
-  const li=document.createElement("li");
-  li.className="item";
-  li.textContent=t;
-  li.draggable=true;
-  ul.appendChild(li);
-});
-let drag;
-ul.addEventListener("dragstart",e=>drag=e.target);
-ul.addEventListener("dragover",e=>{
-  e.preventDefault();
-  const t=e.target;
-  if(t!==drag&&t.classList.contains("item")){
-    const r=t.getBoundingClientRect();
-    const next=(e.clientY-r.top)/(r.bottom-r.top)>.5;
-    ul.insertBefore(drag,next?t.nextSibling:t);
+  // ===== Helpers =====
+  function escapeHTML(str){
+    return (str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   }
-});
 
-function checkSort(){
-  const now=[...ul.children].map(li=>li.textContent);
-  const ok=now.join()==answer.join();
-  const fb=document.getElementById("sortFb");
-  fb.className="feedback "+(ok?"ok":"no");
-  fb.textContent=ok?"排序正確！":"再試一次。";
-}
-
-function checkTF1(){
-  const ev=document.getElementById("ev1").value;
-  const fb=document.getElementById("fb1");
-  if(PASSAGE_TEXT.includes(ev)){
-    fb.className="feedback ok";
-    fb.textContent="通過！你正確找出文章句子。";
-  }else{
-    fb.className="feedback no";
-    fb.textContent="請從文章中選一句話。";
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
-}
 
-function checkTF2(){
-  const ev=document.getElementById("ev2").value;
-  const fb=document.getElementById("fb2");
-  if(/重建|建立家園|不是.*離開|留下來|新的開始/.test(ev)){
-    fb.className="feedback ok";
-    fb.textContent="通過！意思相近即可。";
-  }else{
-    fb.className="feedback no";
-    fb.textContent="請選擇和『重建、不離開』意思相近的句子。";
+  function splitPassageToParagraphSentences(text){
+    const paras = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    const sentenceRegex = /[^。！？!?]+[。！？!?]?/g;
+    return paras.map(p=>{
+      const sents = (p.match(sentenceRegex) || [])
+        .map(s=>s.trim())
+        .filter(s=>s.length>0);
+      return sents;
+    });
   }
-}
+
+  // tf2：放寬「意思相近」檢查（你可再加詞）
+  function meaningSimilarTF2(selectedText){
+    const patterns = [
+      /重新建立|重建|建立家園|家園|新的開始/,
+      /不是.*離開|不要.*離開|沒有.*離開|留下來|留在/,
+      /大家.*決定|有人提出/
+    ];
+    return patterns.some(p => p.test(selectedText));
+  }
+
+  // ===== State =====
+  let score = 0;
+  let doneSort = false;
+  let doneTF1 = false;
+  let doneTF2 = false;
+
+  const $card = document.getElementById("card");
+  const $score = document.getElementById("score");
+  const $progress = document.getElementById("progress");
+
+  function setHUD(){
+    const doneCount = (doneSort?1:0) + (doneTF1?1:0) + (doneTF2?1:0);
+    $score.textContent = String(score);
+    $progress.textContent = `${doneCount}/3`;
+  }
+
+  // ===== Render =====
+  function render(){
+    score = 0;
+    doneSort = false;
+    doneTF1 = false;
+    doneTF2 = false;
+    setHUD();
+
+    const passageParas = splitPassageToParagraphSentences(PASSAGE);
+
+    // build sorting list (shuffle)
+    const sortDeck = shuffle(SORT_ITEMS);
+
+    $card.innerHTML = `
+      <div class="blockTitle">閱讀短文 Reading</div>
+      <div class="passage">${escapeHTML(PASSAGE)}</div>
+
+      <div class="divider"></div>
+
+      <div class="blockTitle">① 排序題：依照發生順序排列</div>
+      <div class="sortHint">
+        你可以拖曳排序（手機可長按拖）。完成後按「檢查排序」。<br>
+        <span style="font-size:12px; color:#315a7d;">Drag to reorder. Long-press on mobile. Then click “Check Order”.</span>
+      </div>
+
+      <ol class="list" id="sortList">
+        ${sortDeck.map(it=>`
+          <li class="item" draggable="true" data-id="${it.id}">
+            <span class="handle">≡</span>
+            <span>${escapeHTML(it.text)}</span>
+          </li>
+        `).join("")}
+      </ol>
+
+      <div class="row" style="margin-top:10px;">
+        <button class="btn secondary" id="sortReshuffle">重新打亂 Reshuffle</button>
+        <button class="btn" id="sortCheck">檢查排序 Check Order</button>
+      </div>
+      <div id="sortFb" class="feedback"></div>
+
+      <div class="divider"></div>
+
+      <div class="blockTitle">② 句意判斷 1：找證據即可（不檢查對錯）</div>
+      ${renderTFBox(TF[0], passageParas)}
+
+      <div class="divider"></div>
+
+      <div class="blockTitle">③ 句意判斷 2：意思相近就通過</div>
+      ${renderTFBox(TF[1], passageParas)}
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <button class="btn secondary" id="restartBtn">再做一次 Restart</button>
+      </div>
+    `;
+
+    // wire sort
+    setupSortDnD();
+    document.getElementById("sortReshuffle").onclick = render;
+    document.getElementById("sortCheck").onclick = checkSort;
+
+    // wire sentence bank + TF checks
+    setupSentenceBanks();
+    setupTFChecks();
+
+    document.getElementById("restartBtn").onclick = render;
+  }
+
+  function renderTFBox(q, passageParas){
+    return `
+      <div class="tfBox" data-qid="${q.id}">
+        <div class="statement">
+          ${escapeHTML(q.statementZh)}
+          <div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">
+            ${escapeHTML(q.statementEn)}
+          </div>
+        </div>
+
+        <div class="tfRow" aria-label="true false">
+          <button class="tfBtn" type="button" data-val="true">對 ✓<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">True</div></button>
+          <button class="tfBtn" type="button" data-val="false">錯 ✗<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">False</div></button>
+        </div>
+
+        <div class="bank">
+          <div class="bankHead">
+            <div>
+              <div class="bankTitle">文章句子（點選當證據）</div>
+              <div class="bankHint">Click sentences as evidence. Selected ones will appear below.</div>
+            </div>
+            <button class="toggleBtn" type="button" data-toggle="${q.id}">收起 Hide</button>
+          </div>
+          <div class="bankBody" id="bankBody-${q.id}">
+            ${passageParas.map((para, pi)=>`
+              <div class="para" data-para="${pi}">
+                ${para.map(sent=>`
+                  <button type="button" class="sent"
+                    data-qid="${q.id}"
+                    data-sent="${escapeHTML(sent)}">${escapeHTML(sent)}</button>
+                `).join("")}
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="pickedLabel">
+            已選證據（可多選）：
+            <span style="font-size:12px; color:#315a7d; font-weight:850;">Selected evidence (multiple allowed).</span>
+          </div>
+          <div class="pickedBox" id="picked-${q.id}">（尚未選取）</div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <button class="btn secondary" type="button" data-clear="${q.id}">清空選取 Clear</button>
+          <button class="btn" type="button" data-check="${q.id}">檢查 Check</button>
+        </div>
+
+        <div class="feedback info" style="display:block; margin-top:10px;">
+          <b>本題通過規則：</b>${escapeHTML(q.passHintZh)}<br>
+          <span style="font-size:12px; font-weight:850;">${escapeHTML(q.passHintEn)}</span>
+        </div>
+
+        <div class="feedback" id="fb-${q.id}"></div>
+      </div>
+    `;
+  }
+
+  // ===== Sorting drag & drop (mouse + touch) =====
+  function setupSortDnD(){
+    const list = document.getElementById("sortList");
+    let draggingEl = null;
+
+    list.addEventListener("dragstart", (e)=>{
+      const li = e.target.closest(".item");
+      if(!li) return;
+      draggingEl = li;
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", li.dataset.id);
+    });
+
+    list.addEventListener("dragend", (e)=>{
+      const li = e.target.closest(".item");
+      if(li) li.classList.remove("dragging");
+      draggingEl = null;
+    });
+
+    list.addEventListener("dragover", (e)=>{
+      e.preventDefault();
+      const over = e.target.closest(".item");
+      if(!over || !draggingEl || over === draggingEl) return;
+
+      const rect = over.getBoundingClientRect();
+      const after = (e.clientY - rect.top) > rect.height / 2;
+      if(after) over.after(draggingEl);
+      else over.before(draggingEl);
+    });
+
+    // Touch reorder
+    let touchDragging = null;
+
+    list.addEventListener("touchstart", (e)=>{
+      const li = e.target.closest(".item");
+      if(!li) return;
+      touchDragging = li;
+      li.classList.add("dragging");
+    }, {passive:true});
+
+    list.addEventListener("touchmove", (e)=>{
+      if(!touchDragging) return;
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const over = el ? el.closest(".item") : null;
+      if(!over || over === touchDragging) return;
+
+      const rect = over.getBoundingClientRect();
+      const after = (touch.clientY - rect.top) > rect.height / 2;
+      if(after) over.after(touchDragging);
+      else over.before(touchDragging);
+    }, {passive:true});
+
+    list.addEventListener("touchend", ()=>{
+      if(touchDragging) touchDragging.classList.remove("dragging");
+      touchDragging = null;
+    });
+  }
+
+  function getSortOrder(){
+    return Array.from(document.querySelectorAll("#sortList .item")).map(li => li.dataset.id);
+  }
+
+  function checkSort(){
+    const fb = document.getElementById("sortFb");
+    const order = getSortOrder();
+    const ok = order.join("|") === SORT_ANSWER.join("|");
+
+    if(ok){
+      if(!doneSort){
+        score += 1;
+        doneSort = true;
+        setHUD();
+      }
+      fb.className = "feedback ok";
+      fb.textContent =
+        "✅ 排序正確！\n\n正確順序：\n1. 村子被淹沒 → 2. 阿哲留下來幫忙 → 3. 水勢變小 → 4. 大家開始清理";
+    }else{
+      fb.className = "feedback no";
+      fb.textContent =
+        "❌ 還不正確，再試一次。\n提示：最先是「村子開始被水淹沒」，最後才是「大家開始清理」。";
+    }
+  }
+
+  // ===== Sentence bank selection =====
+  const selectedMap = { tf1: new Set(), tf2: new Set() };
+  const pickedTF = { tf1: null, tf2: null }; // true/false (only for feedback; tf1 doesn't grade)
+
+  function setupSentenceBanks(){
+    // toggle
+    document.querySelectorAll(".toggleBtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const qid = btn.dataset.toggle;
+        const body = document.getElementById(`bankBody-${qid}`);
+        if(!body) return;
+        const hidden = body.style.display === "none";
+        body.style.display = hidden ? "block" : "none";
+        btn.textContent = hidden ? "收起 Hide" : "展開 Show";
+      });
+    });
+
+    // click sentences
+    document.querySelectorAll(".sent").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        const qid = b.dataset.qid;
+        const text = b.textContent.trim();
+
+        if(!selectedMap[qid]) selectedMap[qid] = new Set();
+
+        if(selectedMap[qid].has(text)){
+          selectedMap[qid].delete(text);
+          b.classList.remove("selected");
+        }else{
+          selectedMap[qid].add(text);
+          b.classList.add("selected");
+        }
+
+        updatePickedBox(qid);
+      });
+    });
+
+    // clear
+    document.querySelectorAll("[data-clear]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const qid = btn.dataset.clear;
+        selectedMap[qid].clear();
+
+        document.querySelectorAll(`.sent[data-qid="${qid}"]`).forEach(s=>s.classList.remove("selected"));
+        updatePickedBox(qid);
+      });
+    });
+
+    // pick true/false (visual only)
+    document.querySelectorAll(".tfBox").forEach(box=>{
+      const qid = box.dataset.qid;
+      const btns = box.querySelectorAll(".tfBtn");
+      btns.forEach(b=>{
+        b.addEventListener("click", ()=>{
+          btns.forEach(x=>x.classList.remove("active"));
+          b.classList.add("active");
+          pickedTF[qid] = (b.dataset.val === "true");
+        });
+      });
+    });
+
+    updatePickedBox("tf1");
+    updatePickedBox("tf2");
+  }
+
+  function updatePickedBox(qid){
+    const el = document.getElementById(`picked-${qid}`);
+    if(!el) return;
+    const arr = Array.from(selectedMap[qid] || []);
+    el.textContent = arr.length ? arr.join("\n") : "（尚未選取）";
+  }
+
+  // ===== Checks for TF =====
+  function setupTFChecks(){
+    document.querySelectorAll("[data-check]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const qid = btn.dataset.check;
+        if(qid === "tf1") checkTF1();
+        if(qid === "tf2") checkTF2();
+      });
+    });
+  }
+
+  function checkTF1(){
+    const fb = document.getElementById("fb-tf1");
+    const selected = Array.from(selectedMap.tf1);
+
+    if(selected.length === 0){
+      fb.className = "feedback no";
+      fb.textContent = "❌ 請先點選至少一句文章句子作為證據。";
+      return;
+    }
+
+    // ✅ 你的規則：只要是文章句子就通過（因為句子都來自文章）
+    if(!doneTF1){
+      score += 1;
+      doneTF1 = true;
+      setHUD();
+    }
+
+    fb.className = "feedback ok";
+    fb.textContent =
+      "✅ 通過！你有選到文章句子當證據。\n（這一題不檢查你選的是對或錯，重點是『找證據』。）";
+  }
+
+  function checkTF2(){
+    const fb = document.getElementById("fb-tf2");
+    const selected = Array.from(selectedMap.tf2);
+
+    if(selected.length === 0){
+      fb.className = "feedback no";
+      fb.textContent = "❌ 請先點選至少一句文章句子作為證據。";
+      return;
+    }
+
+    // 合併證據文本做「意思相近」檢查（放寬）
+    const merged = selected.join(" ");
+    const pass = meaningSimilarTF2(merged);
+
+    if(pass){
+      if(!doneTF2){
+        score += 1;
+        doneTF2 = true;
+        setHUD();
+      }
+
+      // 這題不強制對錯，但若學生按了對/錯，我們給提示
+      const choice = pickedTF.tf2;
+      let note = "";
+      if(choice === true){
+        note = "\n\n（提醒：這題陳述『村民只想離開，不想重建』其實應該選「錯」。但你有找到正確方向的證據，所以仍通過。）";
+      }else if(choice === false){
+        note = "\n\n（你選「錯」也比較符合文章。）";
+      }else{
+        note = "\n\n（你沒有選對/錯也沒關係，本題重點是證據。）";
+      }
+
+      fb.className = "feedback ok";
+      fb.textContent =
+        "✅ 通過！你的證據句意思相近，能表現出『村民想重建／不是離開』的方向。" + note;
+    }else{
+      fb.className = "feedback no";
+      fb.textContent =
+        "❌ 證據句的意思還不夠接近。\n提示：請選包含「重新建立家園／不是離開／新的開始」之類意思的句子。";
+    }
+  }
+
+  // init
+  render();
 </script>
 </body>
 </html>
