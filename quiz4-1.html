@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第四課・練習一：句子擴寫（輸入＋檢查）</title>
+  <style>
+    :root{
+      /* Lesson 4 – 再深一階 */
+      --card:#ffffff;
+      --bg:#5f89b2;
+      --bg2:#486f96;
+      --ink:#050f1c;
+      --muted:#20384d;
+      --brand:#0f172a;
+      --accent:#082f49;
+      --line:#3f6a8f;
+      --soft:#c5d9ea;
+      --good:#16a34a;
+      --bad:#dc2626;
+      --info:#0b3a66;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, var(--bg2), var(--bg));
+      color: var(--ink);
+    }
+    .wrap{ max-width: 980px; margin:0 auto; padding:20px; }
+    .header{ margin-bottom:14px; }
+    .title{ font-size:26px; font-weight:950; margin:0; }
+    .subtitle{
+      font-size:15px; font-weight:800; color:var(--muted);
+      margin-top:6px; line-height:1.5;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 16px 40px rgba(2,48,96,.35);
+    }
+
+    .qno{ font-weight:950; color:var(--accent); margin-bottom:6px; }
+    .question{ font-size:18px; font-weight:900; margin: 0 0 10px; line-height:1.5; }
+
+    .hintBox{
+      background: #eff6ff;
+      border:1px solid #bfdbfe;
+      color: var(--info);
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      line-height:1.45;
+      margin-bottom:12px;
+    }
+
+    .inputRow{ display:grid; gap:10px; }
+    textarea{
+      width:100%;
+      min-height:84px;
+      resize:vertical;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      font-size:16px;
+      font-weight:850;
+      line-height:1.6;
+      outline:none;
+    }
+    textarea:focus{
+      border-color:#93c5fd;
+      box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+    }
+
+    .feedback{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      display:none;
+      font-weight:900;
+      line-height:1.45;
+      white-space:pre-line;
+    }
+    .feedback.ok{ display:block; background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
+    .feedback.no{ display:block; background:#fef2f2; color:#991b1b; border-color:#fecaca; }
+    .feedback.info{ display:block; background:#eff6ff; color:#0b3a66; border-color:#bfdbfe; }
+
+    .actions{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn{
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:var(--brand);
+      color:#fff;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .btn.secondary{ background:#fff; color:var(--brand); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:850;
+      margin-top:6px;
+      line-height:1.4;
+    }
+
+    @media (max-width:600px){
+      .wrap{ padding:14px; }
+      .title{ font-size:24px; }
+      textarea{ font-size:18px; min-height:110px; }
+      .btn{ width:100%; }
+      .actions{ justify-content:stretch; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1 class="title">第四課・練習一：句子擴寫（輸入＋檢查）</h1>
+    <div class="subtitle">
+      請打出一個完整句子，並加入指定語法。系統會檢查「語法是否出現、順序是否正確、是否包含原句重點」。<br>
+      <span style="font-size:13px; color:#314e68;">
+        Type a complete sentence with the required grammar pattern. The system checks required words and order.
+      </span>
+    </div>
+  </div>
+
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+  // ✅ 寬鬆但有底線的「規則式檢查」
+  // - mustInclude: 句子必須包含的關鍵詞（確保與原句意思相關）
+  // - checks: 針對語法的檢查（regex 或順序）
+  // - samples: 參考答案（可用「顯示範例」）
+  const QUESTIONS = [
+    {
+      id: 1,
+      base: "他沒有放棄。",
+      grammar: "即使…也…",
+      mustInclude: ["放棄"],
+      checks: [
+        {
+          name: "包含「即使」",
+          test: (s) => s.includes("即使"),
+          fail: "你的句子沒有出現「即使」。"
+        },
+        {
+          name: "包含「也」",
+          test: (s) => s.includes("也"),
+          fail: "你的句子沒有出現「也」。"
+        },
+        {
+          name: "順序：即使 → 也",
+          test: (s) => s.indexOf("即使") < s.lastIndexOf("也"),
+          fail: "「即使」通常在前，「也」在後。請調整順序。"
+        }
+      ],
+      sample: "即使很困難，他也沒有放棄。"
+    },
+    {
+      id: 2,
+      base: "他們完成任務。",
+      grammar: "經過",
+      mustInclude: ["完成", "任務"],
+      checks: [
+        {
+          name: "包含「經過」",
+          test: (s) => s.includes("經過"),
+          fail: "你的句子沒有出現「經過」。"
+        },
+        {
+          name: "常見結構：經過 + 過程/時間",
+          // 允許：經過努力 / 經過一段時間 / 經過討論…（寬鬆）
+          test: (s) => /經過.{1,10}(努力|討論|訓練|時間|一段|多次|研究|協調|準備)/.test(s) || /經過.{1,20}[，,、]/.test(s),
+          fail: "建議在「經過」後面加上過程或時間（如：經過努力／經過討論／經過一段時間）。"
+        }
+      ],
+      sample: "經過努力，他們完成了任務。"
+    },
+    {
+      id: 3,
+      base: "他解決了問題。",
+      grammar: "於是",
+      mustInclude: ["解決", "問題"],
+      checks: [
+        {
+          name: "包含「於是」",
+          test: (s) => s.includes("於是"),
+          fail: "你的句子沒有出現「於是」。"
+        },
+        {
+          name: "於是前後要有因果感（於是前面通常有原因/過程）",
+          // 很寬鬆：只要於是前面有字且不是句首空的
+          test: (s) => s.trim().indexOf("於是") > 0,
+          fail: "「於是」通常用來接結果，前面可以加原因或過程（例如：他努力思考，於是……）。"
+        }
+      ],
+      sample: "他努力思考，於是解決了問題。"
+    },
+    {
+      id: 4,
+      base: "她提出一個想法。",
+      grammar: "另外",
+      mustInclude: ["提出", "想法"],
+      checks: [
+        {
+          name: "包含「另外」",
+          test: (s) => s.includes("另外"),
+          fail: "你的句子沒有出現「另外」。"
+        },
+        {
+          name: "另外常放句首或逗號後（另外，/另外她…）",
+          test: (s) => /^另外/.test(s.trim()) || /[，,、]\s*另外/.test(s),
+          fail: "「另外」常放句首（例如：另外，她…）或逗號後。"
+        }
+      ],
+      sample: "另外，她提出了一個新的想法。"
+    }
+  ];
+
+  let idx = 0;
+
+  const card = document.getElementById("card");
+
+  function normalize(str){
+    return (str || "")
+      .replace(/\s+/g, "")          // 去空白
+      .replace(/[。！？!?\n\r]/g, ""); // 去句末標點（保留逗號不去）
+  }
+
+  function includesAll(s, words){
+    return words.every(w => s.includes(w));
+  }
+
+  function render(){
+    const q = QUESTIONS[idx];
+    card.innerHTML = `
+      <div class="qno">第 ${q.id} 題｜請加入「${q.grammar}」</div>
+      <div class="question">原句：${q.base}</div>
+
+      <div class="hintBox">
+        目標：打出一個完整句子，需包含：<br>
+        ① 指定語法：「${q.grammar}」<br>
+        ② 原句重點詞：<b>${q.mustInclude.join("、")}</b>
+      </div>
+
+      <div class="inputRow">
+        <textarea id="answer" placeholder="請在這裡輸入你的句子…（例如：……）"></textarea>
+        <div class="mini">
+          小提醒：系統用「關鍵詞＋順序」判斷，允許不同寫法，但必須符合語法基本形式。
+        </div>
+      </div>
+
+      <div id="feedback" class="feedback info" style="display:block;">
+        先輸入句子，再按「檢查」。
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" id="sampleBtn">顯示範例</button>
+        <button class="btn secondary" id="clearBtn">清空</button>
+        <button class="btn" id="checkBtn">檢查</button>
+        <button class="btn" id="nextBtn" disabled>${q.id === QUESTIONS.length ? "完成" : "下一題"}</button>
+      </div>
+    `;
+
+    const $answer = document.getElementById("answer");
+    const $fb = document.getElementById("feedback");
+    const $next = document.getElementById("nextBtn");
+
+    document.getElementById("sampleBtn").onclick = () => {
+      $answer.value = q.sample;
+      $fb.className = "feedback info";
+      $fb.style.display = "block";
+      $fb.textContent = "已填入範例，你可以直接檢查，或自己改寫再檢查。";
+    };
+
+    document.getElementById("clearBtn").onclick = () => {
+      $answer.value = "";
+      $fb.className = "feedback info";
+      $fb.style.display = "block";
+      $fb.textContent = "已清空，請重新輸入句子。";
+      $next.disabled = true;
+    };
+
+    document.getElementById("checkBtn").onclick = () => {
+      const raw = $answer.value.trim();
+      const s = normalize(raw);
+
+      if(!raw){
+        $fb.className = "feedback no";
+        $fb.style.display = "block";
+        $fb.textContent = "請先輸入句子再檢查。";
+        $next.disabled = true;
+        return;
+      }
+
+      // 1) 檢查原句重點詞
+      if(!includesAll(s, q.mustInclude)){
+        $fb.className = "feedback no";
+        $fb.style.display = "block";
+        $fb.textContent =
+          `❌ 未通過：你的句子缺少原句重點詞。\n需要包含：${q.mustInclude.join("、")}\n\n你的句子：${raw}`;
+        $next.disabled = true;
+        return;
+      }
+
+      // 2) 檢查語法規則
+      const fails = [];
+      q.checks.forEach(rule=>{
+        try{
+          if(!rule.test(s)) fails.push(rule.fail);
+        }catch(e){
+          fails.push("檢查時發生錯誤，請再試一次或改寫句子。");
+        }
+      });
+
+      if(fails.length){
+        $fb.className = "feedback no";
+        $fb.style.display = "block";
+        $fb.textContent =
+          `❌ 未通過：語法使用需要調整。\n\n問題：\n- ${fails.join("\n- ")}\n\n你的句子：${raw}\n\n參考：${q.sample}`;
+        $next.disabled = true;
+        return;
+      }
+
+      // 通過
+      $fb.className = "feedback ok";
+      $fb.style.display = "block";
+      $fb.textContent =
+        `✅ 通過！你的句子符合「${q.grammar}」的基本用法，也包含原句重點詞。\n\n你的句子：${raw}`;
+      $next.disabled = false;
+    };
+
+    $next.onclick = () => {
+      if(idx < QUESTIONS.length - 1){
+        idx++;
+        render();
+      }else{
+        card.innerHTML = `
+          <div class="feedback ok" style="display:block;">
+            🎉 你已完成第四課練習一（輸入＋檢查）！<br>
+            你可以回去再改寫一次，讓句子更自然。
+          </div>
+          <div class="actions" style="justify-content:flex-end; margin-top:12px;">
+            <button class="btn secondary" onclick="idx=0; render();">再練一次</button>
+          </div>
+        `;
+      }
+    };
+  }
+
+  render();
+</script>
+</body>
+</html>
