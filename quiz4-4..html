@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第四課・練習四｜排序＋句意判斷</title>
+
+<style>
+:root{
+  --bg:#4f7aa2;
+  --bg2:#3d6388;
+  --card:#ffffff;
+  --ink:#0b1726;
+  --muted:#35526e;
+  --line:#6b93b5;
+  --brand:#0f172a;
+  --accent:#083344;
+  --soft:#e0edf7;
+  --good:#16a34a;
+  --bad:#dc2626;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  color:var(--ink);
+}
+.wrap{max-width:960px;margin:auto;padding:20px;}
+.card{
+  background:var(--card);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 16px 40px rgba(0,0,0,.25);
+}
+h1{margin:0 0 6px;font-size:26px;font-weight:950;}
+.sub{color:var(--muted);font-weight:850;margin-bottom:14px;}
+.section{margin-top:18px;}
+.section h2{
+  font-size:18px;
+  font-weight:950;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.passage{
+  background:#f8fafc;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+  line-height:1.8;
+  font-weight:850;
+  white-space:pre-line;
+}
+.list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+.item{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+  font-weight:950;
+  cursor:grab;
+}
+.btn{
+  padding:12px 16px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:var(--brand);
+  color:#fff;
+  font-weight:950;
+  cursor:pointer;
+}
+.btn.secondary{background:#fff;color:var(--brand);}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.feedback{
+  margin-top:10px;
+  padding:12px 14px;
+  border-radius:14px;
+  font-weight:900;
+  display:none;
+}
+.feedback.ok{display:block;background:#f0fdf4;color:#166534;}
+.feedback.no{display:block;background:#fef2f2;color:#991b1b;}
+
+.sBank{
+  border:1px solid var(--line);
+  background:#f8fafc;
+  border-radius:16px;
+  padding:12px 14px;
+  margin-top:10px;
+}
+.sSent{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  margin:6px 0;
+  font-weight:900;
+  cursor:pointer;
+}
+.sSent.selected{
+  border-color:var(--good);
+  box-shadow:0 0 0 3px rgba(22,163,74,.2);
+}
+textarea{
+  width:100%;
+  min-height:70px;
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  font-weight:850;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+<div class="card">
+
+<h1>第四課・練習四</h1>
+<div class="sub">
+排序事件＋句意判斷（找證據）<br>
+<span style="font-size:13px;">Ordering events & selecting evidence sentences</span>
+</div>
+
+<div class="section">
+<h2>閱讀短文</h2>
+<div class="passage" id="passage"></div>
+</div>
+
+<div class="section">
+<h2>① 排序題</h2>
+<ul class="list" id="sortList"></ul>
+<div class="row">
+<button class="btn" onclick="checkSort()">檢查排序</button>
+</div>
+<div id="sortFb" class="feedback"></div>
+</div>
+
+<div class="section">
+<h2>② 句意判斷 1</h2>
+<p><b>阿哲一開始就不害怕。</b></p>
+
+<div class="sBank" id="bank1"></div>
+
+<textarea id="ev1" placeholder="請點選上方句子"></textarea>
+<button class="btn" onclick="checkTF1()">檢查</button>
+<div id="fb1" class="feedback"></div>
+</div>
+
+<div class="section">
+<h2>③ 句意判斷 2</h2>
+<p><b>村民只想離開，不想重建。</b></p>
+
+<div class="sBank" id="bank2"></div>
+
+<textarea id="ev2" placeholder="請點選上方句子"></textarea>
+<button class="btn" onclick="checkTF2()">檢查</button>
+<div id="fb2" class="feedback"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const PASSAGE_TEXT =
+`大雨下了好幾天，河水慢慢上升，村子開始被水淹沒。
+
+這場災難讓大家非常不安，阿哲也是其中一個，但他沒有逃走。
+即使情況危險，他也選擇留下來幫忙。
+
+經過長時間努力，水勢終於變小。
+於是大家開始清理村子。
+有人提出要重新建立家園，大家決定讓這場災難成為新的開始。`;
+
+document.getElementById("passage").textContent = PASSAGE_TEXT;
+
+const sentences = PASSAGE_TEXT.split(/(?<=[。])/);
+
+function renderBank(id){
+  const box=document.getElementById(id);
+  sentences.forEach(s=>{
+    const b=document.createElement("button");
+    b.className="sSent";
+    b.textContent=s.trim();
+    b.onclick=()=>{
+      const ta=document.getElementById(id==="bank1"?"ev1":"ev2");
+      ta.value=s.trim();
+      b.classList.toggle("selected");
+    };
+    box.appendChild(b);
+  });
+}
+renderBank("bank1");
+renderBank("bank2");
+
+// 排序
+const sortItems=["水勢變小","村子被淹沒","大家開始清理","阿哲留下來幫忙"];
+const answer=["村子被淹沒","阿哲留下來幫忙","水勢變小","大家開始清理"];
+const ul=document.getElementById("sortList");
+sortItems.sort(()=>Math.random()-.5).forEach(t=>{
+  const li=document.createElement("li");
+  li.className="item";
+  li.textContent=t;
+  li.draggable=true;
+  ul.appendChild(li);
+});
+let drag;
+ul.addEventListener("dragstart",e=>drag=e.target);
+ul.addEventListener("dragover",e=>{
+  e.preventDefault();
+  const t=e.target;
+  if(t!==drag&&t.classList.contains("item")){
+    const r=t.getBoundingClientRect();
+    const next=(e.clientY-r.top)/(r.bottom-r.top)>.5;
+    ul.insertBefore(drag,next?t.nextSibling:t);
+  }
+});
+
+function checkSort(){
+  const now=[...ul.children].map(li=>li.textContent);
+  const ok=now.join()==answer.join();
+  const fb=document.getElementById("sortFb");
+  fb.className="feedback "+(ok?"ok":"no");
+  fb.textContent=ok?"排序正確！":"再試一次。";
+}
+
+function checkTF1(){
+  const ev=document.getElementById("ev1").value;
+  const fb=document.getElementById("fb1");
+  if(PASSAGE_TEXT.includes(ev)){
+    fb.className="feedback ok";
+    fb.textContent="通過！你正確找出文章句子。";
+  }else{
+    fb.className="feedback no";
+    fb.textContent="請從文章中選一句話。";
+  }
+}
+
+function checkTF2(){
+  const ev=document.getElementById("ev2").value;
+  const fb=document.getElementById("fb2");
+  if(/重建|建立家園|不是.*離開|留下來|新的開始/.test(ev)){
+    fb.className="feedback ok";
+    fb.textContent="通過！意思相近即可。";
+  }else{
+    fb.className="feedback no";
+    fb.textContent="請選擇和『重建、不離開』意思相近的句子。";
+  }
+}
+</script>
+</body>
+</html>
