@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>第四課・練習一：句子擴寫（輸入＋檢查）</title>
+  <title>第四課・練習一：句子擴寫（輸入＋檢查＋語法說明）</title>
   <style>
     :root{
-      /* Lesson 4 – 再深一階 */
+      /* Lesson 4 – 深一階 */
       --card:#ffffff;
       --bg:#5f89b2;
       --bg2:#486f96;
@@ -16,10 +16,13 @@
       --accent:#082f49;
       --line:#3f6a8f;
       --soft:#c5d9ea;
+
       --good:#16a34a;
       --bad:#dc2626;
       --info:#0b3a66;
+      --warn:#b45309;
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -28,11 +31,24 @@
       color: var(--ink);
     }
     .wrap{ max-width: 980px; margin:0 auto; padding:20px; }
-    .header{ margin-bottom:14px; }
+
+    .header{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap; margin-bottom:14px;
+    }
     .title{ font-size:26px; font-weight:950; margin:0; }
     .subtitle{
-      font-size:15px; font-weight:800; color:var(--muted);
+      font-size:15px; font-weight:850; color:var(--muted);
       margin-top:6px; line-height:1.5;
+    }
+    .stats{ display:flex; gap:10px; flex-wrap:wrap; }
+    .pill{
+      background:#f1f5f9;
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:950;
+      color:#0b2239;
     }
 
     .card{
@@ -44,7 +60,7 @@
     }
 
     .qno{ font-weight:950; color:var(--accent); margin-bottom:6px; }
-    .question{ font-size:18px; font-weight:900; margin: 0 0 10px; line-height:1.5; }
+    .question{ font-size:18px; font-weight:950; margin: 0 0 10px; line-height:1.55; }
 
     .hintBox{
       background: #eff6ff;
@@ -56,23 +72,37 @@
       line-height:1.45;
       margin-bottom:12px;
     }
+    .hintBox .en{
+      display:block;
+      margin-top:6px;
+      font-size:12px;
+      font-weight:850;
+      color:#315a7d;
+    }
 
-    .inputRow{ display:grid; gap:10px; }
     textarea{
       width:100%;
-      min-height:84px;
+      min-height:92px;
       resize:vertical;
       padding:12px 14px;
       border-radius:14px;
       border:1px solid var(--line);
       font-size:16px;
       font-weight:850;
-      line-height:1.6;
+      line-height:1.65;
       outline:none;
     }
     textarea:focus{
       border-color:#93c5fd;
       box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+    }
+
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:850;
+      margin-top:6px;
+      line-height:1.4;
     }
 
     .feedback{
@@ -81,13 +111,25 @@
       border-radius:14px;
       border:1px solid var(--line);
       display:none;
-      font-weight:900;
-      line-height:1.45;
+      font-weight:950;
+      line-height:1.5;
       white-space:pre-line;
     }
     .feedback.ok{ display:block; background:#f0fdf4; color:#166534; border-color:#bbf7d0; }
     .feedback.no{ display:block; background:#fef2f2; color:#991b1b; border-color:#fecaca; }
     .feedback.info{ display:block; background:#eff6ff; color:#0b3a66; border-color:#bfdbfe; }
+
+    .sectionTitle{
+      margin-top:10px;
+      font-weight:950;
+      color:#0b2239;
+    }
+    .bullets{
+      margin:6px 0 0 0;
+      padding-left:18px;
+      font-weight:900;
+    }
+    .bullets li{ margin:4px 0; }
 
     .actions{
       margin-top:14px;
@@ -106,20 +148,78 @@
       cursor:pointer;
     }
     .btn.secondary{ background:#fff; color:var(--brand); }
+    .btn.warn{ background: var(--warn); border-color:#92400e; }
     .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-    .mini{
-      font-size:12px;
-      color:var(--muted);
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(2, 16, 34, .55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modal{
+      width:min(820px, 100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--line);
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px 16px;
+      background: linear-gradient(180deg, #f1f5f9, #ffffff);
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .modalTitle{
+      font-weight:950;
+      font-size:18px;
+      color: var(--accent);
+      line-height:1.25;
+    }
+    .modalClose{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+    .modalBody{
+      padding:14px 16px 16px;
+      line-height:1.7;
+      font-weight:850;
+      color:#0b2239;
+    }
+    .gBlock{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      background:#f8fafc;
+      margin-top:10px;
+    }
+    .gLabel{
+      font-weight:950;
+      color:#0b3a66;
+      margin-bottom:4px;
+    }
+    .gEn{
+      font-size:13px;
+      color:#315a7d;
       font-weight:850;
       margin-top:6px;
-      line-height:1.4;
     }
 
     @media (max-width:600px){
       .wrap{ padding:14px; }
       .title{ font-size:24px; }
-      textarea{ font-size:18px; min-height:110px; }
+      textarea{ font-size:18px; min-height:120px; }
       .btn{ width:100%; }
       .actions{ justify-content:stretch; }
     }
@@ -129,140 +229,486 @@
 <body>
 <div class="wrap">
   <div class="header">
-    <h1 class="title">第四課・練習一：句子擴寫（輸入＋檢查）</h1>
-    <div class="subtitle">
-      請打出一個完整句子，並加入指定語法。系統會檢查「語法是否出現、順序是否正確、是否包含原句重點」。<br>
-      <span style="font-size:13px; color:#314e68;">
-        Type a complete sentence with the required grammar pattern. The system checks required words and order.
-      </span>
+    <div>
+      <h1 class="title">第四課・練習一：句子擴寫</h1>
+      <div class="subtitle">
+        請打出一個完整句子，並加入指定語法。系統會用「必要條件 / 加分條件 / 建議」來檢查。<br>
+        <span style="font-size:13px; color:#314e68;">
+          Type a complete sentence using the required grammar. The system checks required rules, bonus points, and suggestions.
+        </span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <span class="pill">進度：<span id="progress">1/4</span></span>
+      <span class="pill">通過：<span id="passed">0</span></span>
     </div>
   </div>
 
   <div class="card" id="card"></div>
 </div>
 
+<!-- Grammar Modal -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal">
+    <div class="modalHead">
+      <div class="modalTitle" id="modalTitle">語法說明</div>
+      <button class="modalClose" id="modalClose">關閉 Close</button>
+    </div>
+    <div class="modalBody" id="modalBody"></div>
+  </div>
+</div>
+
 <script>
-  // ✅ 寬鬆但有底線的「規則式檢查」
-  // - mustInclude: 句子必須包含的關鍵詞（確保與原句意思相關）
-  // - checks: 針對語法的檢查（regex 或順序）
-  // - samples: 參考答案（可用「顯示範例」）
+  // ===== Grammar explanations (中英＋例句) =====
+  const GRAMMAR_INFO = {
+    yushi: {
+      title: "於是",
+      zh: "用法說明：表示「所以」「因此」。常用在因果關係，前面通常有原因或情況。",
+      en: "Usage: “於是” shows a result or consequence, similar to “so / therefore”. It often follows a cause or situation.",
+      tipZh: "常用在因果關係，常與「因為」搭配。",
+      tipEn: "Often used in cause-and-effect. It can be used with “because”.",
+      exZh: "他努力思考，於是解決了問題。",
+      exEn: "He thought carefully, so he solved the problem."
+    },
+    jingguo: {
+      title: "經過",
+      zh: "用法說明：表示「在某時間後，有新狀況」，也可表示「經歷一個過程」。這裡是介詞用法。",
+      en: "Usage: “經過” means “after going through a process / after a period of time”. It often introduces a process or experience.",
+      tipZh: "有動詞、名詞介詞的用法；這裡是介詞。",
+      tipEn: "It can act like a verb or a preposition; here it works as a preposition.",
+      exZh: "經過這件事，水慢慢退去。",
+      exEn: "After this event, the water slowly went down."
+    },
+    lingwai: {
+      title: "另外",
+      zh: "用法說明：用於補充說明，表示「而且」「別的」。",
+      en: "Usage: “另外” adds extra information, similar to “in addition / besides”.",
+      tipZh: "用於補充說明或另一個事物的意思。",
+      tipEn: "Used to add extra information or introduce another point.",
+      exZh: "另外，她提出了一個新的想法。",
+      exEn: "In addition, she suggested a new idea."
+    },
+    jishi: {
+      title: "即使…也…",
+      zh: "用法說明：表示「假設某事發生，結果不變」。",
+      en: "Usage: “即使…也…” shows that the result does not change even if a condition happens. Similar to “even if … still …”.",
+      tipZh: "雖然是已知事實，即使是可能性，結果都不變。",
+      tipEn: "Whether it is a fact or a possibility, the result remains the same.",
+      exZh: "即使遇到困難，他也沒有放棄。",
+      exEn: "Even if he faced difficulties, he still did not give up."
+    }
+  };
+
+  // ===== Questions with teacher-like checking (required / bonus / advice) =====
   const QUESTIONS = [
     {
       id: 1,
       base: "他沒有放棄。",
-      grammar: "即使…也…",
+      grammarKey: "jishi",
+      grammarName: "即使…也…",
       mustInclude: ["放棄"],
-      checks: [
+
+      required: [
         {
-          name: "包含「即使」",
-          test: (s) => s.includes("即使"),
-          fail: "你的句子沒有出現「即使」。"
+          test: s => s.includes("即使"),
+          zh: "必要：句子中需要出現「即使」。",
+          en: "Required: Your sentence must include “即使 (even if)”."
         },
         {
-          name: "包含「也」",
-          test: (s) => s.includes("也"),
-          fail: "你的句子沒有出現「也」。"
+          test: s => s.includes("也"),
+          zh: "必要：句子中需要出現「也」。",
+          en: "Required: Your sentence must include “也 (still)”."
         },
         {
-          name: "順序：即使 → 也",
-          test: (s) => s.indexOf("即使") < s.lastIndexOf("也"),
-          fail: "「即使」通常在前，「也」在後。請調整順序。"
+          test: s => s.indexOf("即使") < s.lastIndexOf("也"),
+          zh: "必要：「即使」應在前，「也」在後。",
+          en: "Required: “即使” should come before “也”."
         }
       ],
+
+      bonus: [
+        {
+          test: s => /即使.+[，,、].*也/.test(s),
+          zh: "加分：用逗號分開條件與結果，結構更自然。",
+          en: "Bonus: Using a comma between condition and result makes it more natural."
+        },
+        {
+          test: s => /即使.+也.+(沒有放棄|不放棄|不會放棄|仍(然)?沒有放棄)/.test(s),
+          zh: "加分：結果部分表達清楚（仍然不放棄）。",
+          en: "Bonus: The result part is clear (still not giving up)."
+        }
+      ],
+
+      advice: [
+        {
+          test: s => s.trim().startsWith("即使"),
+          zh: "建議：「即使…也…」放在句首會更清楚。",
+          en: "Suggestion: Placing “即使…也…” at the beginning makes it clearer."
+        }
+      ],
+
       sample: "即使很困難，他也沒有放棄。"
     },
+
     {
       id: 2,
       base: "他們完成任務。",
-      grammar: "經過",
+      grammarKey: "jingguo",
+      grammarName: "經過",
       mustInclude: ["完成", "任務"],
-      checks: [
+
+      required: [
         {
-          name: "包含「經過」",
-          test: (s) => s.includes("經過"),
-          fail: "你的句子沒有出現「經過」。"
+          test: s => s.includes("經過"),
+          zh: "必要：句子中需要出現「經過」。",
+          en: "Required: Your sentence must include “經過 (after going through)”."
         },
         {
-          name: "常見結構：經過 + 過程/時間",
-          // 允許：經過努力 / 經過一段時間 / 經過討論…（寬鬆）
-          test: (s) => /經過.{1,10}(努力|討論|訓練|時間|一段|多次|研究|協調|準備)/.test(s) || /經過.{1,20}[，,、]/.test(s),
-          fail: "建議在「經過」後面加上過程或時間（如：經過努力／經過討論／經過一段時間）。"
+          // 寬鬆：經過 +（努力/討論/時間/訓練/準備/研究/協調/一段…）
+          test: s => /經過.{1,10}(努力|討論|時間|訓練|準備|研究|協調|一段|多次|這件事|這段時間)/.test(s) || /經過.{1,20}[，,、]/.test(s),
+          zh: "必要：建議「經過」後面接過程/時間（如：經過努力／經過一段時間）。",
+          en: "Required: After “經過”, add a process or time (e.g., after努力 / after a period of time)."
         }
       ],
+
+      bonus: [
+        {
+          test: s => /經過.+[，,、].*(完成|完成了).*(任務)/.test(s),
+          zh: "加分：先寫「經過…」，再寫結果，因果順序很清楚。",
+          en: "Bonus: The cause (process) first and the result later is very clear."
+        }
+      ],
+
+      advice: [
+        {
+          test: s => /經過/.test(s) && !/[，,、]/.test(s),
+          zh: "建議：可加逗號把「過程」和「結果」分開，句子更好讀。",
+          en: "Suggestion: Add a comma to separate the process and the result for readability."
+        }
+      ],
+
       sample: "經過努力，他們完成了任務。"
     },
+
     {
       id: 3,
       base: "他解決了問題。",
-      grammar: "於是",
+      grammarKey: "yushi",
+      grammarName: "於是",
       mustInclude: ["解決", "問題"],
-      checks: [
+
+      required: [
         {
-          name: "包含「於是」",
-          test: (s) => s.includes("於是"),
-          fail: "你的句子沒有出現「於是」。"
+          test: s => s.includes("於是"),
+          zh: "必要：句子中需要出現「於是」。",
+          en: "Required: Your sentence must include “於是 (so/therefore)”."
         },
         {
-          name: "於是前後要有因果感（於是前面通常有原因/過程）",
-          // 很寬鬆：只要於是前面有字且不是句首空的
-          test: (s) => s.trim().indexOf("於是") > 0,
-          fail: "「於是」通常用來接結果，前面可以加原因或過程（例如：他努力思考，於是……）。"
+          test: s => s.trim().indexOf("於是") > 0,
+          zh: "必要：「於是」前面最好有原因或情況（不要只寫「於是…」）。",
+          en: "Required: Put a cause/situation before “於是” (don’t start with only “於是…”)."
         }
       ],
+
+      bonus: [
+        {
+          test: s => /[，,、].*於是/.test(s),
+          zh: "加分：用逗號把原因/過程和結果分開，因果更明顯。",
+          en: "Bonus: Using a comma makes the cause-result relationship clearer."
+        }
+      ],
+
+      advice: [
+        {
+          test: s => /(因為|所以)/.test(s),
+          zh: "建議：「於是」也可以和「因為/所以」搭配，但注意不要重複太多。",
+          en: "Suggestion: You can use “於是” with “because/so”, but avoid overusing them together."
+        }
+      ],
+
       sample: "他努力思考，於是解決了問題。"
     },
+
     {
       id: 4,
       base: "她提出一個想法。",
-      grammar: "另外",
+      grammarKey: "lingwai",
+      grammarName: "另外",
       mustInclude: ["提出", "想法"],
-      checks: [
+
+      required: [
         {
-          name: "包含「另外」",
-          test: (s) => s.includes("另外"),
-          fail: "你的句子沒有出現「另外」。"
+          test: s => s.includes("另外"),
+          zh: "必要：句子中需要出現「另外」。",
+          en: "Required: Your sentence must include “另外 (in addition)”."
         },
         {
-          name: "另外常放句首或逗號後（另外，/另外她…）",
-          test: (s) => /^另外/.test(s.trim()) || /[，,、]\s*另外/.test(s),
-          fail: "「另外」常放句首（例如：另外，她…）或逗號後。"
+          test: s => /^另外/.test(s.trim()) || /[，,、]\s*另外/.test(s),
+          zh: "必要：「另外」常放句首（例如：另外，…）或逗號後。",
+          en: "Required: “另外” is usually at the beginning or after a comma."
         }
       ],
+
+      bonus: [
+        {
+          test: s => /^另外[，,、]/.test(s.trim()),
+          zh: "加分：句首＋逗號的用法很自然（另外，…）。",
+          en: "Bonus: Starting with “另外,” is natural and clear."
+        }
+      ],
+
+      advice: [
+        {
+          test: s.includes("另外") && !/^另外/.test(s.trim()),
+          zh: "建議：把「另外」放句首通常更清楚。",
+          en: "Suggestion: Putting “另外” at the beginning is usually clearer."
+        }
+      ],
+
       sample: "另外，她提出了一個新的想法。"
     }
   ];
 
   let idx = 0;
+  let passedCount = 0;
 
   const card = document.getElementById("card");
+  const progressEl = document.getElementById("progress");
+  const passedEl = document.getElementById("passed");
 
+  const overlay = document.getElementById("overlay");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const modalClose = document.getElementById("modalClose");
+
+  function openModal(grammarKey){
+    const g = GRAMMAR_INFO[grammarKey];
+    if(!g) return;
+    modalTitle.textContent = `語法說明｜${g.title}  (Grammar)`;
+    modalBody.innerHTML = `
+      <div class="gBlock">
+        <div class="gLabel">中文說明</div>
+        <div>${escapeHTML(g.zh)}</div>
+      </div>
+
+      <div class="gBlock">
+        <div class="gLabel">English Explanation</div>
+        <div class="gEn">${escapeHTML(g.en)}</div>
+      </div>
+
+      <div class="gBlock">
+        <div class="gLabel">小提醒 / Tip</div>
+        <div>${escapeHTML(g.tipZh)}</div>
+        <div class="gEn">${escapeHTML(g.tipEn)}</div>
+      </div>
+
+      <div class="gBlock">
+        <div class="gLabel">課文例句 / Example</div>
+        <div><b>${escapeHTML(g.exZh)}</b></div>
+        <div class="gEn"><b>${escapeHTML(g.exEn)}</b></div>
+      </div>
+    `;
+    overlay.style.display = "flex";
+    overlay.setAttribute("revealed", "true");
+  }
+
+  function closeModal(){
+    overlay.style.display = "none";
+    overlay.removeAttribute("revealed");
+  }
+
+  modalClose.onclick = closeModal;
+  overlay.addEventListener("click", (e)=>{
+    if(e.target === overlay) closeModal();
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && overlay.getAttribute("revealed")) closeModal();
+  });
+
+  function escapeHTML(str){
+    return (str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
+  // Normalize: remove spaces + normalize fullwidth punctuation lightly
   function normalize(str){
     return (str || "")
-      .replace(/\s+/g, "")          // 去空白
-      .replace(/[。！？!?\n\r]/g, ""); // 去句末標點（保留逗號不去）
+      .replace(/\s+/g, "")
+      .replace(/[。！？!?\n\r]/g, "")
+      .replace(/，/g, "，"); // keep comma (we check commas)
   }
 
   function includesAll(s, words){
     return words.every(w => s.includes(w));
   }
 
+  function runChecks(q, raw){
+    const s = normalize(raw);
+
+    // Required: must include key words (topic relevance)
+    if(!includesAll(s, q.mustInclude)){
+      return {
+        pass:false,
+        requiredFails: [{
+          zh:`必要：你的句子缺少原句重點詞（需要包含：${q.mustInclude.join("、")}）。`,
+          en:`Required: Your sentence is missing key words from the original sentence (must include: ${q.mustInclude.join(", ")}).`
+        }],
+        bonusHits: [],
+        adviceHits: []
+      };
+    }
+
+    const requiredFails = [];
+    q.required.forEach(rule=>{
+      try{
+        if(!rule.test(s)) requiredFails.push({ zh: rule.zh, en: rule.en });
+      }catch(err){
+        requiredFails.push({
+          zh:"必要：檢查時發生錯誤，請改寫句子再試一次。",
+          en:"Required: An error occurred during checking. Please revise and try again."
+        });
+      }
+    });
+
+    const pass = requiredFails.length === 0;
+
+    const bonusHits = [];
+    const adviceHits = [];
+
+    // Bonus / Advice only meaningful when base pass (but you can still show suggestions)
+    q.bonus.forEach(rule=>{
+      try{
+        if(rule.test(s)) bonusHits.push({ zh: rule.zh, en: rule.en });
+      }catch(e){}
+    });
+
+    q.advice.forEach(rule=>{
+      try{
+        if(!rule.test(s)) {
+          // If advice test is "good behavior" check, we invert? Here we used "true means satisfied"
+          // We'll only push advice if rule.test(s) is false and rule is phrased as suggestion.
+          // But for some questions we wrote advice in a way that should appear when NOT satisfied.
+          // To keep consistent: we store advice as a "should show" function:
+        }
+      }catch(e){}
+    });
+
+    // We treat advice rules as: if rule.shouldShow exists, use it; else show when test returns false AND has fields
+    // To keep it simple: define advice rules as show-when conditions by making test return true when we WANT to show advice.
+    // Some were written as show-when; some as satisfied. We'll normalize below by rewriting advice evaluation:
+    adviceHits.length = 0;
+    q.advice.forEach(rule=>{
+      try{
+        // Convention: advice rules here are written to "show advice when test(s) is true" (most of ours do)
+        // For question 1, we wrote "test: startsWith 即使" but message says "placing at beginning makes clearer" (that is satisfied).
+        // That shouldn't be shown as advice; it's praise. So we only show advice if message starts with "建議" and test is true AND message is helpful.
+        // We'll handle by marking "showIfTrue" on each advice rule where needed.
+      }catch(e){}
+    });
+
+    return { pass, requiredFails, bonusHits, adviceHits, normalized:s };
+  }
+
+  // We'll implement advice with a more explicit mechanism
+  // Update QUESTIONS advice rules with showIfTrue flag to avoid confusion:
+  QUESTIONS[0].advice = [
+    { showIfTrue: false, test: s => s.trim().startsWith("即使"), zh:"建議：「即使…也…」放在句首會更清楚。", en:"Suggestion: Putting “即使…也…” at the beginning is clearer." }
+  ];
+  // For Q1: this is actually a positive suggestion only when NOT at beginning. Let's flip:
+  QUESTIONS[0].advice = [
+    { showIfTrue: true, test: s => !s.trim().startsWith("即使"), zh:"建議：把「即使…也…」放在句首會更清楚。", en:"Suggestion: Put “即使…也…” at the beginning for clarity." }
+  ];
+
+  QUESTIONS[1].advice = [
+    { showIfTrue:true, test: s => /經過/.test(s) && !/[，,、]/.test(s), zh:"建議：可加逗號把「過程」和「結果」分開，句子更好讀。", en:"Suggestion: Add a comma to separate the process and the result." }
+  ];
+
+  QUESTIONS[2].advice = [
+    { showIfTrue:true, test: s => /(因為|所以)/.test(s), zh:"建議：「於是」也可以和「因為/所以」搭配，但注意不要重複太多。", en:"Suggestion: You can use “於是” with “because/so”, but avoid overusing them together." }
+  ];
+
+  QUESTIONS[3].advice = [
+    { showIfTrue:true, test: s => s.includes("另外") && !s.trim().startsWith("另外"), zh:"建議：把「另外」放句首通常更清楚。", en:"Suggestion: Putting “另外” at the beginning is usually clearer." }
+  ];
+
+  function evaluate(q, raw){
+    const s = normalize(raw);
+
+    // required: topic keywords
+    const requiredFails = [];
+    if(!raw.trim()){
+      requiredFails.push({
+        zh:"必要：請先輸入句子再檢查。",
+        en:"Required: Please type a sentence before checking."
+      });
+      return { pass:false, requiredFails, bonusHits:[], adviceHits:[], normalized:s };
+    }
+
+    if(!includesAll(s, q.mustInclude)){
+      requiredFails.push({
+        zh:`必要：你的句子缺少原句重點詞（需要包含：${q.mustInclude.join("、")}）。`,
+        en:`Required: Missing key words (must include: ${q.mustInclude.join(", ")}).`
+      });
+      return { pass:false, requiredFails, bonusHits:[], adviceHits:[], normalized:s };
+    }
+
+    q.required.forEach(rule=>{
+      try{
+        if(!rule.test(s)) requiredFails.push({ zh: rule.zh, en: rule.en });
+      }catch(e){
+        requiredFails.push({
+          zh:"必要：檢查時發生錯誤，請改寫句子再試一次。",
+          en:"Required: An error occurred during checking. Please revise and try again."
+        });
+      }
+    });
+
+    const pass = requiredFails.length === 0;
+
+    const bonusHits = [];
+    q.bonus.forEach(rule=>{
+      try{ if(rule.test(s)) bonusHits.push({ zh: rule.zh, en: rule.en }); }catch(e){}
+    });
+
+    const adviceHits = [];
+    q.advice.forEach(rule=>{
+      try{
+        const show = rule.showIfTrue ? rule.test(s) : !rule.test(s);
+        if(show) adviceHits.push({ zh: rule.zh, en: rule.en });
+      }catch(e){}
+    });
+
+    return { pass, requiredFails, bonusHits, adviceHits, normalized:s };
+  }
+
   function render(){
     const q = QUESTIONS[idx];
+    progressEl.textContent = `${q.id}/${QUESTIONS.length}`;
+    passedEl.textContent = String(passedCount);
+
     card.innerHTML = `
-      <div class="qno">第 ${q.id} 題｜請加入「${q.grammar}」</div>
-      <div class="question">原句：${q.base}</div>
+      <div class="qno">第 ${q.id} 題｜加入「${q.grammarName}」</div>
+      <div class="question">原句：${escapeHTML(q.base)}</div>
 
       <div class="hintBox">
-        目標：打出一個完整句子，需包含：<br>
-        ① 指定語法：「${q.grammar}」<br>
-        ② 原句重點詞：<b>${q.mustInclude.join("、")}</b>
+        目標：
+        <div style="margin-top:6px;">
+          ① 使用指定語法：<b>${escapeHTML(q.grammarName)}</b><br>
+          ② 句子需包含原句重點詞：<b>${escapeHTML(q.mustInclude.join("、"))}</b>
+        </div>
+        <span class="en">
+          Goal: Use the required grammar and include key words from the original sentence.
+        </span>
       </div>
 
-      <div class="inputRow">
-        <textarea id="answer" placeholder="請在這裡輸入你的句子…（例如：……）"></textarea>
-        <div class="mini">
-          小提醒：系統用「關鍵詞＋順序」判斷，允許不同寫法，但必須符合語法基本形式。
-        </div>
+      <textarea id="answer" placeholder="請在這裡輸入你的句子…"></textarea>
+      <div class="mini">
+        小提醒：系統會先看「必要條件」是否通過，再提供「加分」與「建議」回饋。
       </div>
 
       <div id="feedback" class="feedback info" style="display:block;">
@@ -270,10 +716,11 @@
       </div>
 
       <div class="actions">
-        <button class="btn secondary" id="sampleBtn">顯示範例</button>
-        <button class="btn secondary" id="clearBtn">清空</button>
-        <button class="btn" id="checkBtn">檢查</button>
-        <button class="btn" id="nextBtn" disabled>${q.id === QUESTIONS.length ? "完成" : "下一題"}</button>
+        <button class="btn secondary" id="grammarBtn">查看語法說明 View Grammar</button>
+        <button class="btn secondary" id="sampleBtn">填入範例 Sample</button>
+        <button class="btn secondary" id="clearBtn">清空 Clear</button>
+        <button class="btn" id="checkBtn">檢查 Check</button>
+        <button class="btn" id="nextBtn" disabled>${q.id === QUESTIONS.length ? "完成 Finish" : "下一題 Next"}</button>
       </div>
     `;
 
@@ -281,67 +728,72 @@
     const $fb = document.getElementById("feedback");
     const $next = document.getElementById("nextBtn");
 
+    document.getElementById("grammarBtn").onclick = () => openModal(q.grammarKey);
+
     document.getElementById("sampleBtn").onclick = () => {
       $answer.value = q.sample;
       $fb.className = "feedback info";
       $fb.style.display = "block";
-      $fb.textContent = "已填入範例，你可以直接檢查，或自己改寫再檢查。";
+      $fb.textContent = "已填入範例。你可以直接檢查，或自己改寫再檢查。\nSample inserted. You can check it or rewrite it.";
+      $next.disabled = true;
     };
 
     document.getElementById("clearBtn").onclick = () => {
       $answer.value = "";
       $fb.className = "feedback info";
       $fb.style.display = "block";
-      $fb.textContent = "已清空，請重新輸入句子。";
+      $fb.textContent = "已清空，請重新輸入句子。\nCleared. Please type a new sentence.";
       $next.disabled = true;
     };
 
     document.getElementById("checkBtn").onclick = () => {
-      const raw = $answer.value.trim();
-      const s = normalize(raw);
+      const raw = $answer.value;
 
-      if(!raw){
+      const result = evaluate(q, raw);
+
+      if(!result.pass){
+        // Required fails
         $fb.className = "feedback no";
         $fb.style.display = "block";
-        $fb.textContent = "請先輸入句子再檢查。";
-        $next.disabled = true;
-        return;
-      }
 
-      // 1) 檢查原句重點詞
-      if(!includesAll(s, q.mustInclude)){
-        $fb.className = "feedback no";
-        $fb.style.display = "block";
+        const zhLines = result.requiredFails.map(x => `- ${x.zh}`).join("\n");
+        const enLines = result.requiredFails.map(x => `- ${x.en}`).join("\n");
+
         $fb.textContent =
-          `❌ 未通過：你的句子缺少原句重點詞。\n需要包含：${q.mustInclude.join("、")}\n\n你的句子：${raw}`;
+          `❌ 未通過（必要條件）\n\n【中文】\n${zhLines}\n\n【English】\n${enLines}\n\n你的句子：${raw.trim() || "（空白）"}\n參考範例：${q.sample}`;
         $next.disabled = true;
         return;
       }
 
-      // 2) 檢查語法規則
-      const fails = [];
-      q.checks.forEach(rule=>{
-        try{
-          if(!rule.test(s)) fails.push(rule.fail);
-        }catch(e){
-          fails.push("檢查時發生錯誤，請再試一次或改寫句子。");
-        }
-      });
-
-      if(fails.length){
-        $fb.className = "feedback no";
-        $fb.style.display = "block";
-        $fb.textContent =
-          `❌ 未通過：語法使用需要調整。\n\n問題：\n- ${fails.join("\n- ")}\n\n你的句子：${raw}\n\n參考：${q.sample}`;
-        $next.disabled = true;
-        return;
+      // Pass required
+      // Count pass only once per question per render
+      if(!$next.dataset.passed){
+        passedCount++;
+        passedEl.textContent = String(passedCount);
+        $next.dataset.passed = "1";
       }
 
-      // 通過
+      // Build feedback sections
+      let msg = `✅ 通過（必要條件）\n✅ Passed (Required Rules)\n\n你的句子：${raw.trim()}\n`;
+
+      if(result.bonusHits.length){
+        const zh = result.bonusHits.map(x=>`- ${x.zh}`).join("\n");
+        const en = result.bonusHits.map(x=>`- ${x.en}`).join("\n");
+        msg += `\n🌟 加分點 Bonus\n【中文】\n${zh}\n【English】\n${en}\n`;
+      }else{
+        msg += `\n🌟 加分點 Bonus\n（目前沒有加分點，但已經正確。）\n(No bonus points yet, but it is correct.)\n`;
+      }
+
+      if(result.adviceHits.length){
+        const zh = result.adviceHits.map(x=>`- ${x.zh}`).join("\n");
+        const en = result.adviceHits.map(x=>`- ${x.en}`).join("\n");
+        msg += `\n💡 建議 Suggestions\n【中文】\n${zh}\n【English】\n${en}\n`;
+      }
+
       $fb.className = "feedback ok";
       $fb.style.display = "block";
-      $fb.textContent =
-        `✅ 通過！你的句子符合「${q.grammar}」的基本用法，也包含原句重點詞。\n\n你的句子：${raw}`;
+      $fb.textContent = msg;
+
       $next.disabled = false;
     };
 
@@ -352,14 +804,22 @@
       }else{
         card.innerHTML = `
           <div class="feedback ok" style="display:block;">
-            🎉 你已完成第四課練習一（輸入＋檢查）！<br>
-            你可以回去再改寫一次，讓句子更自然。
+            🎉 你已完成第四課練習一（輸入＋檢查＋語法說明）！<br>
+            ✅ 通過題數：${passedCount} / ${QUESTIONS.length}<br><br>
+            你可以再練一次，試著把句子寫得更自然（用到更多加分點）。
           </div>
           <div class="actions" style="justify-content:flex-end; margin-top:12px;">
-            <button class="btn secondary" onclick="idx=0; render();">再練一次</button>
+            <button class="btn secondary" id="againBtn">再練一次 Practice Again</button>
+            <button class="btn" id="grammarBankBtn">查看語法說明 View Grammar</button>
           </div>
         `;
-      }
+        document.getElementById("againBtn").onclick = () => {
+          idx = 0;
+          passedCount = 0;
+          render();
+        };
+        document.getElementById("grammarBankBtn").onclick = () => openModal("jishi");
+      };
     };
   }
 
