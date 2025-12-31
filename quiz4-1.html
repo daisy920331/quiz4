@@ -460,7 +460,7 @@
 
       advice: [
         {
-          test: s.includes("另外") && !/^另外/.test(s.trim()),
+          test: s => s.includes("另外") && !/^另外/.test(s.trim()),
           zh: "建議：把「另外」放句首通常更清楚。",
           en: "Suggestion: Putting “另外” at the beginning is usually clearer."
         }
