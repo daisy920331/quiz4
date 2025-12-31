@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第四課｜練習目錄</title>
+
+  <style>
+    :root{
+      /* Lesson 4 – 最深色（課程後段） */
+      --bg:#3f5f7f;
+      --bg2:#2f4b66;
+      --card:#ffffff;
+      --ink:#07121f;
+      --muted:#2c435c;
+      --brand:#0f172a;
+      --accent:#083344;
+      --line:#587fa1;
+      --soft:#d6e6f3;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(180deg, var(--bg2), var(--bg));
+      color: var(--ink);
+    }
+
+    .wrap{
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ===== Header ===== */
+    .header{ margin-bottom: 18px; }
+
+    .courseTag{
+      display:inline-block;
+      padding:6px 14px;
+      border-radius:999px;
+      background:#0b2239;
+      color:#e0f2fe;
+      font-weight:900;
+      font-size:14px;
+      margin-bottom:8px;
+      border:1px solid rgba(255,255,255,.25);
+    }
+
+    .title{
+      font-size:28px;
+      font-weight:950;
+      margin:0;
+      line-height:1.25;
+    }
+
+    .enTitle{
+      font-size:16px;
+      font-weight:800;
+      color:var(--muted);
+      margin-top:6px;
+    }
+
+    .subtitle{
+      font-size:15px;
+      font-weight:800;
+      color:var(--muted);
+      margin-top:10px;
+      line-height:1.5;
+    }
+
+    .enSub{
+      font-size:13px;
+      font-weight:800;
+      color:#35526e;
+      margin-top:6px;
+      line-height:1.5;
+    }
+
+    /* ===== Grid ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap:16px;
+      margin-top:22px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .card h3{
+      margin:0;
+      font-size:20px;
+      font-weight:950;
+      color:var(--accent);
+      line-height:1.25;
+    }
+
+    .card .enH{
+      display:block;
+      margin-top:6px;
+      font-size:13px;
+      font-weight:800;
+      color:var(--muted);
+    }
+
+    .desc{
+      font-size:14px;
+      font-weight:800;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .desc .enD{
+      display:block;
+      margin-top:6px;
+      font-size:12px;
+      font-weight:800;
+      color:#35526e;
+      line-height:1.5;
+    }
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+
+    .tag{
+      font-size:12px;
+      font-weight:900;
+      padding:4px 10px;
+      border-radius:999px;
+      background:var(--soft);
+      border:1px solid var(--line);
+      color:#0b2239;
+    }
+
+    .actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+    }
+
+    .btn{
+      flex:1;
+      text-align:center;
+      padding:12px 14px;
+      border-radius:14px;
+      background:var(--brand);
+      color:#fff;
+      text-decoration:none;
+      font-weight:900;
+      border:1px solid #0b2239;
+    }
+
+    .footer{
+      margin-top:26px;
+      font-size:13px;
+      font-weight:800;
+      color:#0b2239;
+      text-align:center;
+      opacity:.9;
+    }
+
+    @media (max-width:600px){
+      .wrap{ padding:14px; }
+      .title{ font-size:24px; }
+      .btn{ padding:14px 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="courseTag">Lesson 4</div>
+
+      <h1 class="title">
+        第四課｜練習目錄
+        <div class="enTitle">Lesson 4: Practice Menu</div>
+      </h1>
+
+      <div class="subtitle">
+        本課重點在於語法理解、文本判斷與找證據能力，<br>
+        特別適合線上自學與閱讀訓練。
+        <div class="enSub">
+          This lesson focuses on grammar usage, text interpretation,  
+          and identifying evidence in a passage.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- 練習一 -->
+      <div class="card">
+        <h3>
+          練習一｜語法句子檢查
+          <span class="enH">Practice 1: Grammar Sentence Check</span>
+        </h3>
+        <p class="desc">
+          學生自行輸入句子，系統依語法規則檢查是否正確。
+          <span class="enD">
+            Type a sentence and let the system check grammar usage.
+          </span>
+        </p>
+        <div class="tags">
+          <span class="tag">語法</span>
+          <span class="tag">輸入</span>
+          <span class="tag">檢核</span>
+        </div>
+        <div class="actions">
+          <a class="btn" href="quiz4-1.html">開始 Start</a>
+        </div>
+      </div>
+
+      <!-- 練習二 -->
+      <div class="card">
+        <h3>
+          練習二｜句意判斷
+          <span class="enH">Practice 2: Meaning Judgment</span>
+        </h3>
+        <p class="desc">
+          判斷句子是否符合文章意思，並選取相關依據。
+          <span class="enD">
+            Judge sentence meaning and identify supporting evidence.
+          </span>
+        </p>
+        <div class="tags">
+          <span class="tag">理解</span>
+          <span class="tag">判斷</span>
+          <span class="tag">文本</span>
+        </div>
+        <div class="actions">
+          <a class="btn" href="quiz4-2.html">開始 Start</a>
+        </div>
+      </div>
+
+      <!-- 練習三 -->
+      <div class="card">
+        <h3>
+          練習三｜閱讀理解
+          <span class="enH">Practice 3: Reading Comprehension</span>
+        </h3>
+        <p class="desc">
+          閱讀短文後回答問題，理解事件與人物行為。
+          <span class="enD">
+            Read the passage and answer comprehension questions.
+          </span>
+        </p>
+        <div class="tags">
+          <span class="tag">閱讀</span>
+          <span class="tag">理解</span>
+          <span class="tag">選擇題</span>
+        </div>
+        <div class="actions">
+          <a class="btn" href="quiz4-3.html">開始 Start</a>
+        </div>
+      </div>
+
+      <!-- 練習四 -->
+      <div class="card">
+        <h3>
+          練習四｜排序與找證據
+          <span class="enH">Practice 4: Ordering & Evidence Selection</span>
+        </h3>
+        <p class="desc">
+          排列事件順序，並從文章中選取句子作為判斷依據。
+          <span class="enD">
+            Order events and select sentences as textual evidence.
+          </span>
+        </p>
+        <div class="tags">
+          <span class="tag">排序</span>
+          <span class="tag">證據</span>
+          <span class="tag">自學</span>
+        </div>
+        <div class="actions">
+          <a class="btn" href="quiz4-4.html">開始 Start</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      第四課練習目錄｜Lesson 4 Practice Menu
+    </div>
+  </div>
+</body>
+</html>
