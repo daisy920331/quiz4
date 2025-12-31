@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>第四課・練習三：排序＋找證據</title>
+  <title>第四課・練習三：排序＋句意判斷（選句作證據）</title>
   <style>
     :root{
-      /* Lesson 4 – 深色系（與你的 lesson4/index 一致） */
       --bg:#3f5f7f;
       --bg2:#2f4b66;
       --card:#ffffff;
@@ -55,7 +54,7 @@
       border:1px solid var(--line);
       border-radius:20px;
       padding:18px;
-      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      box-shadow:0 16a0px 40px rgba(0,0,0,.35);
     }
 
     .blockTitle{
@@ -186,7 +185,6 @@
       border-color:#93c5fd;
       box-shadow:0 0 0 3px rgba(147,197,253,.35);
     }
-    .tfBtn:disabled{ opacity:.7; cursor:not-allowed; }
 
     .bank{
       border:1px solid var(--line);
@@ -213,6 +211,7 @@
       font-weight:850;
       color:#315a7d;
       margin-top:4px;
+      line-height:1.4;
     }
     .toggleBtn{
       border:1px solid var(--line);
@@ -277,7 +276,7 @@
 <div class="wrap">
   <div class="header">
     <div>
-      <h1 class="title">第四課・練習三：排序＋找證據</h1>
+      <h1 class="title">第四課・練習三：排序＋句意判斷</h1>
       <div class="subtitle">
         先閱讀短文，再完成：① 排序 ② 句意判斷（用文章句子當證據）。<br>
         <span style="font-size:13px; color:#35526e; font-weight:850;">
@@ -295,14 +294,18 @@
 </div>
 
 <script>
-  // ===== Passage =====
+  // ✅ Correct passage (你提供的正確文本)
   const PASSAGE = `大雨下了好幾天，河水慢慢上升，村子開始被水淹沒。
 
-這場災難讓大家非常不安，阿哲也是其中一個，但他沒有逃走。即使情況危險，他也選擇留下來幫忙。他答應村民，會盡力幫忙修補破掉的地方。
+這場災難讓大家非常不安，阿哲也是其中一個，但他沒有逃走。即使情況危險，他也選擇留下來幫忙。他答應村民，會盡力堵住破掉的地方。
 
-經過長時間努力，水勢終於變小。於是大家開始清理村子。有人提出要重新建立家園，因為不是離開這個地方，大家決定讓這場災難成為新的開始。`;
+經過長時間努力，水勢終於變小。於是大家開始清理村子。有人提出要重新建立家園，因為不想離開這個地方，大家決定讓這場災難成為新的開端。`;
 
-  // ===== Sorting items (你之前確認過的順序) =====
+  // 對錯答案（對錯也要算分）
+  const TF1_CORRECT = false; // 阿哲一開始就不害怕 → 錯
+  const TF2_CORRECT = false; // 村民只想離開不想重建 → 錯
+
+  // 排序題（順序不變）
   const SORT_ITEMS = [
     { id:"water_small", text:"水勢變小" },
     { id:"village_flood", text:"村子被淹沒" },
@@ -311,29 +314,7 @@
   ];
   const SORT_ANSWER = ["village_flood","azhe_help","water_small","clean_up"];
 
-  // ===== TF statements =====
-  const TF = [
-    {
-      id:"tf1",
-      statementZh:"阿哲一開始就不害怕。",
-      statementEn:"A-Zhe was not afraid from the beginning.",
-      // ✅ 你的要求：tf1 不檢查對錯，只要證據來自文章即可
-      relaxedMode: "evidence_only",
-      passHintZh:"只要你有選到文章中的句子當證據，就會通過。",
-      passHintEn:"You will pass as long as you select a sentence from the passage as evidence."
-    },
-    {
-      id:"tf2",
-      statementZh:"村民只想離開，不想重建。",
-      statementEn:"The villagers only wanted to leave and did not want to rebuild.",
-      // ✅ 放寬：意思相近就給過（不強制對錯）
-      relaxedMode: "meaning_similar",
-      passHintZh:"證據句意思相近就通過（即使你按錯對/錯也可以過）。",
-      passHintEn:"You will pass if your evidence has a similar meaning (even if your True/False choice is wrong)."
-    }
-  ];
-
-  // ===== Helpers =====
+  // helpers
   function escapeHTML(str){
     return (str ?? "")
       .replaceAll("&","&amp;")
@@ -342,7 +323,6 @@
       .replaceAll('"',"&quot;")
       .replaceAll("'","&#39;");
   }
-
   function shuffle(arr){
     const a = arr.slice();
     for(let i=a.length-1;i>0;i--){
@@ -351,7 +331,6 @@
     }
     return a;
   }
-
   function splitPassageToParagraphSentences(text){
     const paras = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
     const sentenceRegex = /[^。！？!?]+[。！？!?]?/g;
@@ -363,21 +342,24 @@
     });
   }
 
-  // tf2：放寬「意思相近」檢查（你可再加詞）
+  // ✅ 放寬語意檢查：支援「不想離開」「新的開端」
   function meaningSimilarTF2(selectedText){
     const patterns = [
-      /重新建立|重建|建立家園|家園|新的開始/,
-      /不是.*離開|不要.*離開|沒有.*離開|留下來|留在/,
-      /大家.*決定|有人提出/
+      /重新建立|重建|建立家園|家園/,
+      /不想離開|不要離開|想留在|留下來|留在/,
+      /新的開端|新的開始|成為.*開端|成為.*開始/
     ];
     return patterns.some(p => p.test(selectedText));
   }
 
-  // ===== State =====
+  // state
   let score = 0;
   let doneSort = false;
   let doneTF1 = false;
   let doneTF2 = false;
+
+  const selectedMap = { tf1: new Set(), tf2: new Set() };
+  const pickedTF = { tf1: null, tf2: null };
 
   const $card = document.getElementById("card");
   const $score = document.getElementById("score");
@@ -389,17 +371,16 @@
     $progress.textContent = `${doneCount}/3`;
   }
 
-  // ===== Render =====
   function render(){
     score = 0;
     doneSort = false;
     doneTF1 = false;
     doneTF2 = false;
+    selectedMap.tf1.clear(); selectedMap.tf2.clear();
+    pickedTF.tf1 = null; pickedTF.tf2 = null;
     setHUD();
 
     const passageParas = splitPassageToParagraphSentences(PASSAGE);
-
-    // build sorting list (shuffle)
     const sortDeck = shuffle(SORT_ITEMS);
 
     $card.innerHTML = `
@@ -431,13 +412,23 @@
 
       <div class="divider"></div>
 
-      <div class="blockTitle">② 句意判斷 1：找證據即可（不檢查對錯）</div>
-      ${renderTFBox(TF[0], passageParas)}
+      <div class="blockTitle">② 句意判斷 1</div>
+      ${renderTFBox("tf1",
+        "阿哲一開始就不害怕。",
+        "A-Zhe was not afraid from the beginning.",
+        "通過條件：對/錯要選對 + 必須選至少一句文章句子作為證據。",
+        "Pass: correct True/False + select at least one evidence sentence."
+      )}
 
       <div class="divider"></div>
 
-      <div class="blockTitle">③ 句意判斷 2：意思相近就通過</div>
-      ${renderTFBox(TF[1], passageParas)}
+      <div class="blockTitle">③ 句意判斷 2</div>
+      ${renderTFBox("tf2",
+        "村民只想離開，不想重建。",
+        "The villagers only wanted to leave and did not want to rebuild.",
+        "通過條件：對/錯要選對 + 證據句意思相近即可（放寬）。",
+        "Pass: correct True/False + evidence meaning is similar (lenient)."
+      )}
 
       <div class="divider"></div>
 
@@ -446,31 +437,31 @@
       </div>
     `;
 
-    // wire sort
     setupSortDnD();
     document.getElementById("sortReshuffle").onclick = render;
     document.getElementById("sortCheck").onclick = checkSort;
 
-    // wire sentence bank + TF checks
-    setupSentenceBanks();
+    renderSentenceBanks(passageParas);
+    setupTFButtons();
+    setupBankControls();
     setupTFChecks();
 
     document.getElementById("restartBtn").onclick = render;
   }
 
-  function renderTFBox(q, passageParas){
+  function renderTFBox(qid, zh, en, ruleZh, ruleEn){
     return `
-      <div class="tfBox" data-qid="${q.id}">
+      <div class="tfBox" data-qid="${qid}">
         <div class="statement">
-          ${escapeHTML(q.statementZh)}
+          ${escapeHTML(zh)}
           <div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">
-            ${escapeHTML(q.statementEn)}
+            ${escapeHTML(en)}
           </div>
         </div>
 
         <div class="tfRow" aria-label="true false">
-          <button class="tfBtn" type="button" data-val="true">對 ✓<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">True</div></button>
-          <button class="tfBtn" type="button" data-val="false">錯 ✗<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">False</div></button>
+          <button class="tfBtn" type="button" data-qid="${qid}" data-val="true">對 ✓<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">True</div></button>
+          <button class="tfBtn" type="button" data-qid="${qid}" data-val="false">錯 ✗<div style="font-size:12px; font-weight:850; color:#315a7d; margin-top:4px;">False</div></button>
         </div>
 
         <div class="bank">
@@ -479,43 +470,34 @@
               <div class="bankTitle">文章句子（點選當證據）</div>
               <div class="bankHint">Click sentences as evidence. Selected ones will appear below.</div>
             </div>
-            <button class="toggleBtn" type="button" data-toggle="${q.id}">收起 Hide</button>
+            <button class="toggleBtn" type="button" data-toggle="${qid}">收起 Hide</button>
           </div>
-          <div class="bankBody" id="bankBody-${q.id}">
-            ${passageParas.map((para, pi)=>`
-              <div class="para" data-para="${pi}">
-                ${para.map(sent=>`
-                  <button type="button" class="sent"
-                    data-qid="${q.id}"
-                    data-sent="${escapeHTML(sent)}">${escapeHTML(sent)}</button>
-                `).join("")}
-              </div>
-            `).join("")}
-          </div>
+
+          <div class="bankBody" id="bankBody-${qid}"></div>
 
           <div class="pickedLabel">
             已選證據（可多選）：
             <span style="font-size:12px; color:#315a7d; font-weight:850;">Selected evidence (multiple allowed).</span>
           </div>
-          <div class="pickedBox" id="picked-${q.id}">（尚未選取）</div>
+          <div class="pickedBox" id="picked-${qid}">（尚未選取）</div>
         </div>
 
         <div class="row" style="margin-top:10px;">
-          <button class="btn secondary" type="button" data-clear="${q.id}">清空選取 Clear</button>
-          <button class="btn" type="button" data-check="${q.id}">檢查 Check</button>
+          <button class="btn secondary" type="button" data-clear="${qid}">清空選取 Clear</button>
+          <button class="btn" type="button" data-check="${qid}">檢查 Check</button>
         </div>
 
         <div class="feedback info" style="display:block; margin-top:10px;">
-          <b>本題通過規則：</b>${escapeHTML(q.passHintZh)}<br>
-          <span style="font-size:12px; font-weight:850;">${escapeHTML(q.passHintEn)}</span>
+          <b>規則 Rules：</b>${escapeHTML(ruleZh)}<br>
+          <span style="font-size:12px; font-weight:850;">${escapeHTML(ruleEn)}</span>
         </div>
 
-        <div class="feedback" id="fb-${q.id}"></div>
+        <div class="feedback" id="fb-${qid}"></div>
       </div>
     `;
   }
 
-  // ===== Sorting drag & drop (mouse + touch) =====
+  // Sort DnD
   function setupSortDnD(){
     const list = document.getElementById("sortList");
     let draggingEl = null;
@@ -546,7 +528,7 @@
       else over.before(draggingEl);
     });
 
-    // Touch reorder
+    // touch
     let touchDragging = null;
 
     list.addEventListener("touchstart", (e)=>{
@@ -600,79 +582,77 @@
     }
   }
 
-  // ===== Sentence bank selection =====
-  const selectedMap = { tf1: new Set(), tf2: new Set() };
-  const pickedTF = { tf1: null, tf2: null }; // true/false (only for feedback; tf1 doesn't grade)
+  // Banks
+  function renderSentenceBanks(passageParas){
+    ["tf1","tf2"].forEach(qid=>{
+      const body = document.getElementById(`bankBody-${qid}`);
+      body.innerHTML = passageParas.map((para)=>`
+        <div class="para">
+          ${para.map(sent=>`
+            <button type="button" class="sent" data-qid="${qid}">
+              ${escapeHTML(sent)}
+            </button>
+          `).join("")}
+        </div>
+      `).join("");
 
-  function setupSentenceBanks(){
-    // toggle
+      body.querySelectorAll(".sent").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const text = btn.textContent.trim();
+          if(selectedMap[qid].has(text)){
+            selectedMap[qid].delete(text);
+            btn.classList.remove("selected");
+          }else{
+            selectedMap[qid].add(text);
+            btn.classList.add("selected");
+          }
+          updatePickedBox(qid);
+        });
+      });
+
+      updatePickedBox(qid);
+    });
+  }
+
+  function updatePickedBox(qid){
+    const el = document.getElementById(`picked-${qid}`);
+    const arr = Array.from(selectedMap[qid]);
+    el.textContent = arr.length ? arr.join("\n") : "（尚未選取）";
+  }
+
+  function setupTFButtons(){
+    document.querySelectorAll(".tfBtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const qid = btn.dataset.qid;
+        const box = document.querySelector(`.tfBox[data-qid="${qid}"]`);
+        box.querySelectorAll(".tfBtn").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        pickedTF[qid] = (btn.dataset.val === "true");
+      });
+    });
+  }
+
+  function setupBankControls(){
     document.querySelectorAll(".toggleBtn").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const qid = btn.dataset.toggle;
         const body = document.getElementById(`bankBody-${qid}`);
-        if(!body) return;
         const hidden = body.style.display === "none";
         body.style.display = hidden ? "block" : "none";
         btn.textContent = hidden ? "收起 Hide" : "展開 Show";
       });
     });
 
-    // click sentences
-    document.querySelectorAll(".sent").forEach(b=>{
-      b.addEventListener("click", ()=>{
-        const qid = b.dataset.qid;
-        const text = b.textContent.trim();
-
-        if(!selectedMap[qid]) selectedMap[qid] = new Set();
-
-        if(selectedMap[qid].has(text)){
-          selectedMap[qid].delete(text);
-          b.classList.remove("selected");
-        }else{
-          selectedMap[qid].add(text);
-          b.classList.add("selected");
-        }
-
-        updatePickedBox(qid);
-      });
-    });
-
-    // clear
     document.querySelectorAll("[data-clear]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const qid = btn.dataset.clear;
         selectedMap[qid].clear();
-
-        document.querySelectorAll(`.sent[data-qid="${qid}"]`).forEach(s=>s.classList.remove("selected"));
+        document.querySelectorAll(`#bankBody-${qid} .sent`).forEach(s=>s.classList.remove("selected"));
         updatePickedBox(qid);
       });
     });
-
-    // pick true/false (visual only)
-    document.querySelectorAll(".tfBox").forEach(box=>{
-      const qid = box.dataset.qid;
-      const btns = box.querySelectorAll(".tfBtn");
-      btns.forEach(b=>{
-        b.addEventListener("click", ()=>{
-          btns.forEach(x=>x.classList.remove("active"));
-          b.classList.add("active");
-          pickedTF[qid] = (b.dataset.val === "true");
-        });
-      });
-    });
-
-    updatePickedBox("tf1");
-    updatePickedBox("tf2");
   }
 
-  function updatePickedBox(qid){
-    const el = document.getElementById(`picked-${qid}`);
-    if(!el) return;
-    const arr = Array.from(selectedMap[qid] || []);
-    el.textContent = arr.length ? arr.join("\n") : "（尚未選取）";
-  }
-
-  // ===== Checks for TF =====
   function setupTFChecks(){
     document.querySelectorAll("[data-check]").forEach(btn=>{
       btn.addEventListener("click", ()=>{
@@ -686,65 +666,73 @@
   function checkTF1(){
     const fb = document.getElementById("fb-tf1");
     const selected = Array.from(selectedMap.tf1);
+    const choice = pickedTF.tf1;
 
+    if(choice === null){
+      fb.className = "feedback no";
+      fb.textContent = "❌ 請先選擇「對」或「錯」。";
+      return;
+    }
     if(selected.length === 0){
       fb.className = "feedback no";
-      fb.textContent = "❌ 請先點選至少一句文章句子作為證據。";
+      fb.textContent = "❌ 請先選取至少一句文章句子作為證據。";
+      return;
+    }
+    if(choice !== TF1_CORRECT){
+      fb.className = "feedback no";
+      fb.textContent =
+        "❌ 判斷不正確。\n提示：文章說阿哲也『非常不安』，但他沒有逃走。";
       return;
     }
 
-    // ✅ 你的規則：只要是文章句子就通過（因為句子都來自文章）
     if(!doneTF1){
       score += 1;
       doneTF1 = true;
       setHUD();
     }
-
     fb.className = "feedback ok";
-    fb.textContent =
-      "✅ 通過！你有選到文章句子當證據。\n（這一題不檢查你選的是對或錯，重點是『找證據』。）";
+    fb.textContent = "✅ 正確！對錯判斷正確，而且你有提供文章證據。";
   }
 
   function checkTF2(){
     const fb = document.getElementById("fb-tf2");
     const selected = Array.from(selectedMap.tf2);
+    const choice = pickedTF.tf2;
 
+    if(choice === null){
+      fb.className = "feedback no";
+      fb.textContent = "❌ 請先選擇「對」或「錯」。";
+      return;
+    }
     if(selected.length === 0){
       fb.className = "feedback no";
-      fb.textContent = "❌ 請先點選至少一句文章句子作為證據。";
+      fb.textContent = "❌ 請先選取至少一句文章句子作為證據。";
+      return;
+    }
+    if(choice !== TF2_CORRECT){
+      fb.className = "feedback no";
+      fb.textContent =
+        "❌ 判斷不正確。\n提示：文章提到『重新建立家園』與『新的開端』。";
       return;
     }
 
-    // 合併證據文本做「意思相近」檢查（放寬）
     const merged = selected.join(" ");
-    const pass = meaningSimilarTF2(merged);
+    const passMeaning = meaningSimilarTF2(merged);
 
-    if(pass){
-      if(!doneTF2){
-        score += 1;
-        doneTF2 = true;
-        setHUD();
-      }
-
-      // 這題不強制對錯，但若學生按了對/錯，我們給提示
-      const choice = pickedTF.tf2;
-      let note = "";
-      if(choice === true){
-        note = "\n\n（提醒：這題陳述『村民只想離開，不想重建』其實應該選「錯」。但你有找到正確方向的證據，所以仍通過。）";
-      }else if(choice === false){
-        note = "\n\n（你選「錯」也比較符合文章。）";
-      }else{
-        note = "\n\n（你沒有選對/錯也沒關係，本題重點是證據。）";
-      }
-
-      fb.className = "feedback ok";
-      fb.textContent =
-        "✅ 通過！你的證據句意思相近，能表現出『村民想重建／不是離開』的方向。" + note;
-    }else{
+    if(!passMeaning){
       fb.className = "feedback no";
       fb.textContent =
-        "❌ 證據句的意思還不夠接近。\n提示：請選包含「重新建立家園／不是離開／新的開始」之類意思的句子。";
+        "❌ 證據句與題目意思關聯不夠。\n提示：找與「重建／不想離開／新的開端」相關的句子。";
+      return;
     }
+
+    if(!doneTF2){
+      score += 1;
+      doneTF2 = true;
+      setHUD();
+    }
+    fb.className = "feedback ok";
+    fb.textContent = "✅ 正確！你判斷對錯正確，而且證據句意思也符合文章。";
   }
 
   // init
