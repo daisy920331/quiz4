@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>第四課・練習一：句子擴寫（輸入＋檢查＋語法說明）</title>
+  <title>第四課・練習一：句子擴寫（嚴格檢查版）</title>
   <style>
     :root{
-      /* Lesson 4 – 深一階 */
       --card:#ffffff;
       --bg:#5f89b2;
       --bg2:#486f96;
@@ -50,6 +49,17 @@
       font-weight:950;
       color:#0b2239;
     }
+    .badge{
+      display:inline-block;
+      margin-left:8px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:950;
+      background:#fde68a;
+      border:1px solid #f59e0b;
+      color:#7c2d12;
+    }
 
     .card{
       background:var(--card);
@@ -82,7 +92,7 @@
 
     textarea{
       width:100%;
-      min-height:92px;
+      min-height:100px;
       resize:vertical;
       padding:12px 14px;
       border-radius:14px;
@@ -119,18 +129,6 @@
     .feedback.no{ display:block; background:#fef2f2; color:#991b1b; border-color:#fecaca; }
     .feedback.info{ display:block; background:#eff6ff; color:#0b3a66; border-color:#bfdbfe; }
 
-    .sectionTitle{
-      margin-top:10px;
-      font-weight:950;
-      color:#0b2239;
-    }
-    .bullets{
-      margin:6px 0 0 0;
-      padding-left:18px;
-      font-weight:900;
-    }
-    .bullets li{ margin:4px 0; }
-
     .actions{
       margin-top:14px;
       display:flex;
@@ -148,7 +146,6 @@
       cursor:pointer;
     }
     .btn.secondary{ background:#fff; color:var(--brand); }
-    .btn.warn{ background: var(--warn); border-color:#92400e; }
     .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
     /* Modal */
@@ -219,7 +216,7 @@
     @media (max-width:600px){
       .wrap{ padding:14px; }
       .title{ font-size:24px; }
-      textarea{ font-size:18px; min-height:120px; }
+      textarea{ font-size:18px; min-height:130px; }
       .btn{ width:100%; }
       .actions{ justify-content:stretch; }
     }
@@ -230,11 +227,14 @@
 <div class="wrap">
   <div class="header">
     <div>
-      <h1 class="title">第四課・練習一：句子擴寫</h1>
+      <h1 class="title">
+        第四課・練習一：句子擴寫
+        <span class="badge">嚴格檢查 Strict</span>
+      </h1>
       <div class="subtitle">
-        請打出一個完整句子，並加入指定語法。系統會用「必要條件 / 加分條件 / 建議」來檢查。<br>
+        需通過：①語法結構 ②語意合理（明顯不通判錯）③標點正確（逗號/句末）<br>
         <span style="font-size:13px; color:#314e68;">
-          Type a complete sentence using the required grammar. The system checks required rules, bonus points, and suggestions.
+          Must pass: (1) grammar structure (2) obvious meaning issues (3) punctuation (comma & sentence-final mark).
         </span>
       </div>
     </div>
@@ -260,47 +260,101 @@
 </div>
 
 <script>
+  // ===== Helper: safer replace (no replaceAll) =====
+  function escapeHTML(str){
+    return String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // For checking: keep punctuation but normalize spaces
+  function normalizeRaw(str){
+    return String(str ?? "")
+      .replace(/\u00A0/g, " ")
+      .replace(/[ \t]+/g, " ")
+      .trim();
+  }
+
+  // For keyword include checks: remove spaces only
+  function stripSpaces(str){
+    return String(str ?? "").replace(/\s+/g, "");
+  }
+
+  function hasSentenceFinalPunct(s){
+    // Accept Chinese or English sentence-final punctuation
+    return /[。！？!?]$/.test(s);
+  }
+
+  function hasAnyWeirdControlChar(s){
+    // Common invisible control chars that break scripts or display
+    return /[\u200B\u200C\u200D\uFEFF]/.test(s);
+  }
+
   // ===== Grammar explanations (中英＋例句) =====
   const GRAMMAR_INFO = {
     yushi: {
       title: "於是",
-      zh: "用法說明：表示「所以」「因此」。常用在因果關係，前面通常有原因或情況。",
-      en: "Usage: “於是” shows a result or consequence, similar to “so / therefore”. It often follows a cause or situation.",
-      tipZh: "常用在因果關係，常與「因為」搭配。",
-      tipEn: "Often used in cause-and-effect. It can be used with “because”.",
+      zh: "用法：表示「所以」「因此」。前面通常有原因或情況，後面是結果。",
+      en: "Usage: shows a result/consequence, like “so/therefore”. Usually follows a cause/situation.",
       exZh: "他努力思考，於是解決了問題。",
       exEn: "He thought carefully, so he solved the problem."
     },
     jingguo: {
       title: "經過",
-      zh: "用法說明：表示「在某時間後，有新狀況」，也可表示「經歷一個過程」。這裡是介詞用法。",
-      en: "Usage: “經過” means “after going through a process / after a period of time”. It often introduces a process or experience.",
-      tipZh: "有動詞、名詞介詞的用法；這裡是介詞。",
-      tipEn: "It can act like a verb or a preposition; here it works as a preposition.",
-      exZh: "經過這件事，水慢慢退去。",
-      exEn: "After this event, the water slowly went down."
+      zh: "用法：表示「在某時間後／經歷某過程後」再出現結果。可接「努力、時間、討論…」。",
+      en: "Usage: “after going through a process / after a period of time”, then comes a result.",
+      exZh: "經過努力，他們完成了任務。",
+      exEn: "After hard work, they completed the task."
     },
     lingwai: {
       title: "另外",
-      zh: "用法說明：用於補充說明，表示「而且」「別的」。",
-      en: "Usage: “另外” adds extra information, similar to “in addition / besides”.",
-      tipZh: "用於補充說明或另一個事物的意思。",
-      tipEn: "Used to add extra information or introduce another point.",
+      zh: "用法：補充說明，表示「而且／此外」。常放句首：另外，……",
+      en: "Usage: adds extra information (“in addition/besides”). Often at the beginning: “另外， …”",
       exZh: "另外，她提出了一個新的想法。",
       exEn: "In addition, she suggested a new idea."
     },
     jishi: {
       title: "即使…也…",
-      zh: "用法說明：表示「假設某事發生，結果不變」。",
-      en: "Usage: “即使…也…” shows that the result does not change even if a condition happens. Similar to “even if … still …”.",
-      tipZh: "雖然是已知事實，即使是可能性，結果都不變。",
-      tipEn: "Whether it is a fact or a possibility, the result remains the same.",
+      zh: "用法：表示「條件不影響結果」＝就算…，結果仍不變。",
+      en: "Usage: “even if …, still …” the result does not change despite the condition.",
       exZh: "即使遇到困難，他也沒有放棄。",
       exEn: "Even if he faced difficulties, he still did not give up."
     }
   };
 
-  // ===== Questions with teacher-like checking (required / bonus / advice) =====
+  // ===== Strict checking rules =====
+  // We keep checks explainable (rule-based), not black-box.
+  const GLOBAL_STRICT_RULES = [
+    {
+      id: "no-empty",
+      zh: "必要：請先輸入句子。",
+      en: "Required: Please type a sentence.",
+      testFail: s => !s
+    },
+    {
+      id: "no-weird-chars",
+      zh: "必要：句子包含看不見的特殊字元（請手動重新打一遍）。",
+      en: "Required: Your sentence contains invisible special characters. Please retype it.",
+      testFail: s => hasAnyWeirdControlChar(s)
+    },
+    {
+      id: "final-punct",
+      zh: "必要：句末需要句號或問號/驚嘆號（例如：。！？）。",
+      en: "Required: Add a sentence-final mark (e.g., 。！？ or .!? ).",
+      testFail: s => !hasSentenceFinalPunct(s)
+    },
+    {
+      id: "no-double-connectors",
+      zh: "語意：連接詞重複使用（如「於是所以」「因為所以於是」），會讓語意不通或冗贅。",
+      en: "Meaning: duplicated connectors (e.g., “於是所以”, “因為所以於是”) make it unclear or redundant.",
+      testFail: s => /(於是所以|所以於是|因為所以於是|因為於是所以)/.test(s)
+    }
+  ];
+
+  // ===== Questions =====
   const QUESTIONS = [
     {
       id: 1,
@@ -308,46 +362,25 @@
       grammarKey: "jishi",
       grammarName: "即使…也…",
       mustInclude: ["放棄"],
-
+      mustCommaPattern: /即使.+[，,].+也/,
       required: [
+        { zh:"必要：需出現「即使」。", en:"Required: Must include “即使”.", fail: s => !s.includes("即使") },
+        { zh:"必要：需出現「也」。", en:"Required: Must include “也”.", fail: s => !s.includes("也") },
+        { zh:"必要：「即使」在前，「也」在後。", en:"Required: “即使” should come before “也”.", fail: s => s.includes("即使") && s.includes("也") && (s.indexOf("即使") > s.lastIndexOf("也")) },
+        { zh:"標點：嚴格模式下「即使…，…也…」中間必須有逗號。", en:"Punctuation (strict): Use a comma in “即使…，…也…”.", fail: s => /即使.+也/.test(s) && !/即使.+[，,].+也/.test(s) }
+      ],
+      semanticFails: [
         {
-          test: s => s.includes("即使"),
-          zh: "必要：句子中需要出現「即使」。",
-          en: "Required: Your sentence must include “即使 (even if)”."
+          zh:"語意：用了「即使…也…」但句子像在表示因果（例如「下雨了，於是…」），容易衝突。請改成「就算…仍然…」。",
+          en:"Meaning: “即使…也…” should show ‘despite’. Avoid turning it into a cause-result sentence. Use ‘even if…, still…’ clearly.",
+          fail: s => /即使.+(所以|因此|於是)/.test(s)
         },
         {
-          test: s => s.includes("也"),
-          zh: "必要：句子中需要出現「也」。",
-          en: "Required: Your sentence must include “也 (still)”."
-        },
-        {
-          test: s => s.indexOf("即使") < s.lastIndexOf("也"),
-          zh: "必要：「即使」應在前，「也」在後。",
-          en: "Required: “即使” should come before “也”."
+          zh:"語意：條件句缺少具體內容（例如只寫「即使很…」但結果太不清楚）。請補充更完整。",
+          en:"Meaning: The condition/result is too vague. Add clearer content.",
+          fail: s => /即使(很|太)?[，,].*也[，,。！？!?]?$/.test(s)
         }
       ],
-
-      bonus: [
-        {
-          test: s => /即使.+[，,、].*也/.test(s),
-          zh: "加分：用逗號分開條件與結果，結構更自然。",
-          en: "Bonus: Using a comma between condition and result makes it more natural."
-        },
-        {
-          test: s => /即使.+也.+(沒有放棄|不放棄|不會放棄|仍(然)?沒有放棄)/.test(s),
-          zh: "加分：結果部分表達清楚（仍然不放棄）。",
-          en: "Bonus: The result part is clear (still not giving up)."
-        }
-      ],
-
-      advice: [
-        {
-          test: s => s.trim().startsWith("即使"),
-          zh: "建議：「即使…也…」放在句首會更清楚。",
-          en: "Suggestion: Placing “即使…也…” at the beginning makes it clearer."
-        }
-      ],
-
       sample: "即使很困難，他也沒有放棄。"
     },
 
@@ -356,38 +389,23 @@
       base: "他們完成任務。",
       grammarKey: "jingguo",
       grammarName: "經過",
-      mustInclude: ["完成", "任務"],
-
+      mustInclude: ["完成","任務"],
       required: [
-        {
-          test: s => s.includes("經過"),
-          zh: "必要：句子中需要出現「經過」。",
-          en: "Required: Your sentence must include “經過 (after going through)”."
+        { zh:"必要：需出現「經過」。", en:"Required: Must include “經過”.", fail: s => !s.includes("經過") },
+        { zh:"必要：「經過」後面需要接「過程/時間」（如：經過努力／經過一段時間）。", en:"Required: After “經過”, add a process/time (e.g., 經過努力 / 經過一段時間).",
+          fail: s => s.includes("經過") && !/經過.{1,10}(努力|討論|時間|訓練|準備|研究|協調|一段|多次|這件事|這段時間)/.test(s)
         },
-        {
-          // 寬鬆：經過 +（努力/討論/時間/訓練/準備/研究/協調/一段…）
-          test: s => /經過.{1,10}(努力|討論|時間|訓練|準備|研究|協調|一段|多次|這件事|這段時間)/.test(s) || /經過.{1,20}[，,、]/.test(s),
-          zh: "必要：建議「經過」後面接過程/時間（如：經過努力／經過一段時間）。",
-          en: "Required: After “經過”, add a process or time (e.g., after努力 / after a period of time)."
+        { zh:"標點：嚴格模式下「經過…，…」建議必須用逗號分開。", en:"Punctuation (strict): Use a comma in “經過…，…”.",
+          fail: s => s.includes("經過") && !/經過.+[，,]/.test(s)
         }
       ],
-
-      bonus: [
+      semanticFails: [
         {
-          test: s => /經過.+[，,、].*(完成|完成了).*(任務)/.test(s),
-          zh: "加分：先寫「經過…」，再寫結果，因果順序很清楚。",
-          en: "Bonus: The cause (process) first and the result later is very clear."
+          zh:"語意：「經過」後面不應直接接結果動作（例如「經過完成任務」）。要先是過程，再是結果。",
+          en:"Meaning: After “經過”, do not put the result action directly (e.g., 經過完成…). Put the process first, then the result.",
+          fail: s => /經過(完成|完成了|達成|做完)/.test(s)
         }
       ],
-
-      advice: [
-        {
-          test: s => /經過/.test(s) && !/[，,、]/.test(s),
-          zh: "建議：可加逗號把「過程」和「結果」分開，句子更好讀。",
-          en: "Suggestion: Add a comma to separate the process and the result for readability."
-        }
-      ],
-
       sample: "經過努力，他們完成了任務。"
     },
 
@@ -396,37 +414,23 @@
       base: "他解決了問題。",
       grammarKey: "yushi",
       grammarName: "於是",
-      mustInclude: ["解決", "問題"],
-
+      mustInclude: ["解決","問題"],
       required: [
-        {
-          test: s => s.includes("於是"),
-          zh: "必要：句子中需要出現「於是」。",
-          en: "Required: Your sentence must include “於是 (so/therefore)”."
+        { zh:"必要：需出現「於是」。", en:"Required: Must include “於是”.", fail: s => !s.includes("於是") },
+        { zh:"必要：「於是」前面要有原因/情況（不可只寫「於是…」）。", en:"Required: Put a cause/situation before “於是” (don’t start with only “於是…”).",
+          fail: s => s.startsWith("於是")
         },
-        {
-          test: s => s.trim().indexOf("於是") > 0,
-          zh: "必要：「於是」前面最好有原因或情況（不要只寫「於是…」）。",
-          en: "Required: Put a cause/situation before “於是” (don’t start with only “於是…”)."
+        { zh:"標點：嚴格模式下，原因與結果之間必須用逗號（…，於是…）。", en:"Punctuation (strict): Use a comma before “於是” (…，於是…).",
+          fail: s => s.includes("於是") && !/[，,].*於是/.test(s)
         }
       ],
-
-      bonus: [
+      semanticFails: [
         {
-          test: s => /[，,、].*於是/.test(s),
-          zh: "加分：用逗號把原因/過程和結果分開，因果更明顯。",
-          en: "Bonus: Using a comma makes the cause-result relationship clearer."
+          zh:"語意：不要把「於是」用成並列（像「他努力，於是也…」但結果不明）。請確保後面是明確結果。",
+          en:"Meaning: Make sure what follows “於是” is a clear result, not a vague continuation.",
+          fail: s => /於是(也)?[，,。！？!?]?$/.test(s)
         }
       ],
-
-      advice: [
-        {
-          test: s => /(因為|所以)/.test(s),
-          zh: "建議：「於是」也可以和「因為/所以」搭配，但注意不要重複太多。",
-          en: "Suggestion: You can use “於是” with “because/so”, but avoid overusing them together."
-        }
-      ],
-
       sample: "他努力思考，於是解決了問題。"
     },
 
@@ -435,41 +439,25 @@
       base: "她提出一個想法。",
       grammarKey: "lingwai",
       grammarName: "另外",
-      mustInclude: ["提出", "想法"],
-
+      mustInclude: ["提出","想法"],
       required: [
-        {
-          test: s => s.includes("另外"),
-          zh: "必要：句子中需要出現「另外」。",
-          en: "Required: Your sentence must include “另外 (in addition)”."
-        },
-        {
-          test: s => /^另外/.test(s.trim()) || /[，,、]\s*另外/.test(s),
-          zh: "必要：「另外」常放句首（例如：另外，…）或逗號後。",
-          en: "Required: “另外” is usually at the beginning or after a comma."
+        { zh:"必要：需出現「另外」。", en:"Required: Must include “另外”.", fail: s => !s.includes("另外") },
+        { zh:"標點：嚴格模式下「另外」放句首必須加逗號（另外，…）。", en:"Punctuation (strict): If “另外” is at the beginning, add a comma (另外，…).",
+          fail: s => s.startsWith("另外") && !/^另外[，,]/.test(s)
         }
       ],
-
-      bonus: [
+      semanticFails: [
         {
-          test: s => /^另外[，,、]/.test(s.trim()),
-          zh: "加分：句首＋逗號的用法很自然（另外，…）。",
-          en: "Bonus: Starting with “另外,” is natural and clear."
+          zh:"語意：「另外」是補充，不表示因果結果；不要把它當成「所以/於是」。",
+          en:"Meaning: “另外” adds information; it is not a cause→result connector like “so/therefore”.",
+          fail: s => /另外.*(所以|因此|於是)/.test(s)
         }
       ],
-
-      advice: [
-        {
-          test: s => s.includes("另外") && !/^另外/.test(s.trim()),
-          zh: "建議：把「另外」放句首通常更清楚。",
-          en: "Suggestion: Putting “另外” at the beginning is usually clearer."
-        }
-      ],
-
       sample: "另外，她提出了一個新的想法。"
     }
   ];
 
+  // ===== UI / state =====
   let idx = 0;
   let passedCount = 0;
 
@@ -477,6 +465,7 @@
   const progressEl = document.getElementById("progress");
   const passedEl = document.getElementById("passed");
 
+  // Modal
   const overlay = document.getElementById("overlay");
   const modalTitle = document.getElementById("modalTitle");
   const modalBody = document.getElementById("modalBody");
@@ -485,7 +474,8 @@
   function openModal(grammarKey){
     const g = GRAMMAR_INFO[grammarKey];
     if(!g) return;
-    modalTitle.textContent = `語法說明｜${g.title}  (Grammar)`;
+
+    modalTitle.textContent = `語法說明｜${g.title} (Grammar)`;
     modalBody.innerHTML = `
       <div class="gBlock">
         <div class="gLabel">中文說明</div>
@@ -498,13 +488,7 @@
       </div>
 
       <div class="gBlock">
-        <div class="gLabel">小提醒 / Tip</div>
-        <div>${escapeHTML(g.tipZh)}</div>
-        <div class="gEn">${escapeHTML(g.tipEn)}</div>
-      </div>
-
-      <div class="gBlock">
-        <div class="gLabel">課文例句 / Example</div>
+        <div class="gLabel">例句 / Example</div>
         <div><b>${escapeHTML(g.exZh)}</b></div>
         <div class="gEn"><b>${escapeHTML(g.exEn)}</b></div>
       </div>
@@ -519,171 +503,70 @@
   }
 
   modalClose.onclick = closeModal;
-  overlay.addEventListener("click", (e)=>{
-    if(e.target === overlay) closeModal();
-  });
-  document.addEventListener("keydown", (e)=>{
-    if(e.key === "Escape" && overlay.getAttribute("revealed")) closeModal();
-  });
+  overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && overlay.getAttribute("revealed")) closeModal(); });
 
-  function escapeHTML(str){
-    return (str ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+  function includesAllKeywords(noSpaceStr, words){
+    return words.every(w => noSpaceStr.includes(w));
   }
 
-  // Normalize: remove spaces + normalize fullwidth punctuation lightly
-  function normalize(str){
-    return (str || "")
-      .replace(/\s+/g, "")
-      .replace(/[。！？!?\n\r]/g, "")
-      .replace(/，/g, "，"); // keep comma (we check commas)
-  }
+  function evaluateStrict(q, rawInput){
+    const raw = normalizeRaw(rawInput);
+    const noSpace = stripSpaces(raw);
 
-  function includesAll(s, words){
-    return words.every(w => s.includes(w));
-  }
+    const fails = []; // each: {type, zh, en}
+    const bonus = [];
 
-  function runChecks(q, raw){
-    const s = normalize(raw);
-
-    // Required: must include key words (topic relevance)
-    if(!includesAll(s, q.mustInclude)){
-      return {
-        pass:false,
-        requiredFails: [{
-          zh:`必要：你的句子缺少原句重點詞（需要包含：${q.mustInclude.join("、")}）。`,
-          en:`Required: Your sentence is missing key words from the original sentence (must include: ${q.mustInclude.join(", ")}).`
-        }],
-        bonusHits: [],
-        adviceHits: []
-      };
-    }
-
-    const requiredFails = [];
-    q.required.forEach(rule=>{
+    // Global strict rules
+    GLOBAL_STRICT_RULES.forEach(rule=>{
       try{
-        if(!rule.test(s)) requiredFails.push({ zh: rule.zh, en: rule.en });
-      }catch(err){
-        requiredFails.push({
-          zh:"必要：檢查時發生錯誤，請改寫句子再試一次。",
-          en:"Required: An error occurred during checking. Please revise and try again."
-        });
+        if(rule.testFail(raw)){
+          fails.push({ type:"global", zh: rule.zh, en: rule.en });
+        }
+      }catch(e){
+        fails.push({ type:"global", zh:"必要：檢查時發生錯誤，請改寫句子再試一次。", en:"Required: An error occurred during checking. Please revise and try again." });
       }
     });
 
-    const pass = requiredFails.length === 0;
+    // Keyword (topic relevance)
+    if(raw && !includesAllKeywords(noSpace, q.mustInclude)){
+      fails.push({
+        type:"keyword",
+        zh:`必要：句子需包含重點詞：${q.mustInclude.join("、")}。`,
+        en:`Required: Your sentence must include key words: ${q.mustInclude.join(", ")}.`
+      });
+    }
 
-    const bonusHits = [];
-    const adviceHits = [];
-
-    // Bonus / Advice only meaningful when base pass (but you can still show suggestions)
-    q.bonus.forEach(rule=>{
+    // Grammar + punctuation required
+    q.required.forEach(r=>{
       try{
-        if(rule.test(s)) bonusHits.push({ zh: rule.zh, en: rule.en });
-      }catch(e){}
+        if(raw && r.fail(raw)){
+          fails.push({ type:"required", zh: r.zh, en: r.en });
+        }
+      }catch(e){
+        fails.push({ type:"required", zh:"必要：語法檢查出錯，請改寫再試。", en:"Required: Grammar check failed due to an error. Please rewrite." });
+      }
     });
 
-    q.advice.forEach(rule=>{
+    // Meaning checks (obvious issues only)
+    q.semanticFails.forEach(r=>{
       try{
-        if(!rule.test(s)) {
-          // If advice test is "good behavior" check, we invert? Here we used "true means satisfied"
-          // We'll only push advice if rule.test(s) is false and rule is phrased as suggestion.
-          // But for some questions we wrote advice in a way that should appear when NOT satisfied.
-          // To keep consistent: we store advice as a "should show" function:
+        if(raw && r.fail(raw)){
+          fails.push({ type:"semantic", zh: r.zh, en: r.en });
         }
       }catch(e){}
     });
 
-    // We treat advice rules as: if rule.shouldShow exists, use it; else show when test returns false AND has fields
-    // To keep it simple: define advice rules as show-when conditions by making test return true when we WANT to show advice.
-    // Some were written as show-when; some as satisfied. We'll normalize below by rewriting advice evaluation:
-    adviceHits.length = 0;
-    q.advice.forEach(rule=>{
-      try{
-        // Convention: advice rules here are written to "show advice when test(s) is true" (most of ours do)
-        // For question 1, we wrote "test: startsWith 即使" but message says "placing at beginning makes clearer" (that is satisfied).
-        // That shouldn't be shown as advice; it's praise. So we only show advice if message starts with "建議" and test is true AND message is helpful.
-        // We'll handle by marking "showIfTrue" on each advice rule where needed.
-      }catch(e){}
-    });
+    // Simple “style bonus” (optional)
+    // Reward clear comma usage for target patterns
+    if(q.grammarKey === "jishi" && /即使.+[，,].+也/.test(raw)) bonus.push("comma-good");
+    if(q.grammarKey === "jingguo" && /經過.+[，,]/.test(raw)) bonus.push("comma-good");
+    if(q.grammarKey === "yushi" && /[，,].*於是/.test(raw)) bonus.push("comma-good");
+    if(q.grammarKey === "lingwai" && /^另外[，,]/.test(raw)) bonus.push("comma-good");
 
-    return { pass, requiredFails, bonusHits, adviceHits, normalized:s };
-  }
+    const pass = fails.length === 0;
 
-  // We'll implement advice with a more explicit mechanism
-  // Update QUESTIONS advice rules with showIfTrue flag to avoid confusion:
-  QUESTIONS[0].advice = [
-    { showIfTrue: false, test: s => s.trim().startsWith("即使"), zh:"建議：「即使…也…」放在句首會更清楚。", en:"Suggestion: Putting “即使…也…” at the beginning is clearer." }
-  ];
-  // For Q1: this is actually a positive suggestion only when NOT at beginning. Let's flip:
-  QUESTIONS[0].advice = [
-    { showIfTrue: true, test: s => !s.trim().startsWith("即使"), zh:"建議：把「即使…也…」放在句首會更清楚。", en:"Suggestion: Put “即使…也…” at the beginning for clarity." }
-  ];
-
-  QUESTIONS[1].advice = [
-    { showIfTrue:true, test: s => /經過/.test(s) && !/[，,、]/.test(s), zh:"建議：可加逗號把「過程」和「結果」分開，句子更好讀。", en:"Suggestion: Add a comma to separate the process and the result." }
-  ];
-
-  QUESTIONS[2].advice = [
-    { showIfTrue:true, test: s => /(因為|所以)/.test(s), zh:"建議：「於是」也可以和「因為/所以」搭配，但注意不要重複太多。", en:"Suggestion: You can use “於是” with “because/so”, but avoid overusing them together." }
-  ];
-
-  QUESTIONS[3].advice = [
-    { showIfTrue:true, test: s => s.includes("另外") && !s.trim().startsWith("另外"), zh:"建議：把「另外」放句首通常更清楚。", en:"Suggestion: Putting “另外” at the beginning is usually clearer." }
-  ];
-
-  function evaluate(q, raw){
-    const s = normalize(raw);
-
-    // required: topic keywords
-    const requiredFails = [];
-    if(!raw.trim()){
-      requiredFails.push({
-        zh:"必要：請先輸入句子再檢查。",
-        en:"Required: Please type a sentence before checking."
-      });
-      return { pass:false, requiredFails, bonusHits:[], adviceHits:[], normalized:s };
-    }
-
-    if(!includesAll(s, q.mustInclude)){
-      requiredFails.push({
-        zh:`必要：你的句子缺少原句重點詞（需要包含：${q.mustInclude.join("、")}）。`,
-        en:`Required: Missing key words (must include: ${q.mustInclude.join(", ")}).`
-      });
-      return { pass:false, requiredFails, bonusHits:[], adviceHits:[], normalized:s };
-    }
-
-    q.required.forEach(rule=>{
-      try{
-        if(!rule.test(s)) requiredFails.push({ zh: rule.zh, en: rule.en });
-      }catch(e){
-        requiredFails.push({
-          zh:"必要：檢查時發生錯誤，請改寫句子再試一次。",
-          en:"Required: An error occurred during checking. Please revise and try again."
-        });
-      }
-    });
-
-    const pass = requiredFails.length === 0;
-
-    const bonusHits = [];
-    q.bonus.forEach(rule=>{
-      try{ if(rule.test(s)) bonusHits.push({ zh: rule.zh, en: rule.en }); }catch(e){}
-    });
-
-    const adviceHits = [];
-    q.advice.forEach(rule=>{
-      try{
-        const show = rule.showIfTrue ? rule.test(s) : !rule.test(s);
-        if(show) adviceHits.push({ zh: rule.zh, en: rule.en });
-      }catch(e){}
-    });
-
-    return { pass, requiredFails, bonusHits, adviceHits, normalized:s };
+    return { pass, fails, raw, bonus };
   }
 
   function render(){
@@ -692,31 +575,34 @@
     passedEl.textContent = String(passedCount);
 
     card.innerHTML = `
-      <div class="qno">第 ${q.id} 題｜加入「${q.grammarName}」</div>
+      <div class="qno">第 ${q.id} 題｜加入「${escapeHTML(q.grammarName)}」</div>
       <div class="question">原句：${escapeHTML(q.base)}</div>
 
       <div class="hintBox">
-        目標：
+        <div><b>嚴格模式通過條件：</b></div>
         <div style="margin-top:6px;">
           ① 使用指定語法：<b>${escapeHTML(q.grammarName)}</b><br>
-          ② 句子需包含原句重點詞：<b>${escapeHTML(q.mustInclude.join("、"))}</b>
+          ② 句子需包含重點詞：<b>${escapeHTML(q.mustInclude.join("、"))}</b><br>
+          ③ 標點需正確（逗號/句末標點）<br>
+          ④ 明顯語意不通（錯搭配/因果衝突）會判錯
         </div>
         <span class="en">
-          Goal: Use the required grammar and include key words from the original sentence.
+          Strict pass: grammar + key words + punctuation + no obvious meaning issues.
         </span>
       </div>
 
-      <textarea id="answer" placeholder="請在這裡輸入你的句子…"></textarea>
+      <textarea id="answer" placeholder="請在這裡輸入你的句子…（句末記得加 。！？）"></textarea>
       <div class="mini">
-        小提醒：系統會先看「必要條件」是否通過，再提供「加分」與「建議」回饋。
+        嚴格模式：少逗號、少句號、明顯不通都會判錯。Strict mode: comma/final mark/obvious meaning issues are required.
       </div>
 
       <div id="feedback" class="feedback info" style="display:block;">
-        先輸入句子，再按「檢查」。
+        先輸入句子，再按「檢查」。<br>
+        Type your sentence, then click “Check”.
       </div>
 
       <div class="actions">
-        <button class="btn secondary" id="grammarBtn">查看語法說明 View Grammar</button>
+        <button class="btn secondary" id="grammarBtn">查看語法 View Grammar</button>
         <button class="btn secondary" id="sampleBtn">填入範例 Sample</button>
         <button class="btn secondary" id="clearBtn">清空 Clear</button>
         <button class="btn" id="checkBtn">檢查 Check</button>
@@ -734,8 +620,9 @@
       $answer.value = q.sample;
       $fb.className = "feedback info";
       $fb.style.display = "block";
-      $fb.textContent = "已填入範例。你可以直接檢查，或自己改寫再檢查。\nSample inserted. You can check it or rewrite it.";
+      $fb.textContent = "已填入範例。你可以直接檢查，或改寫再檢查。\nSample inserted. You can check it or rewrite it.";
       $next.disabled = true;
+      delete $next.dataset.passed;
     };
 
     document.getElementById("clearBtn").onclick = () => {
@@ -744,50 +631,41 @@
       $fb.style.display = "block";
       $fb.textContent = "已清空，請重新輸入句子。\nCleared. Please type a new sentence.";
       $next.disabled = true;
+      delete $next.dataset.passed;
     };
 
     document.getElementById("checkBtn").onclick = () => {
       const raw = $answer.value;
+      const res = evaluateStrict(q, raw);
 
-      const result = evaluate(q, raw);
-
-      if(!result.pass){
-        // Required fails
+      if(!res.pass){
         $fb.className = "feedback no";
         $fb.style.display = "block";
 
-        const zhLines = result.requiredFails.map(x => `- ${x.zh}`).join("\n");
-        const enLines = result.requiredFails.map(x => `- ${x.en}`).join("\n");
+        const zhLines = res.fails.map(x => `- ${x.zh}`).join("\n");
+        const enLines = res.fails.map(x => `- ${x.en}`).join("\n");
 
         $fb.textContent =
-          `❌ 未通過（必要條件）\n\n【中文】\n${zhLines}\n\n【English】\n${enLines}\n\n你的句子：${raw.trim() || "（空白）"}\n參考範例：${q.sample}`;
+          `❌ 未通過（嚴格模式）\n❌ Not Passed (Strict Mode)\n\n【中文原因】\n${zhLines}\n\n【English Reasons】\n${enLines}\n\n你的句子：${res.raw || "（空白）"}\n參考範例：${q.sample}`;
         $next.disabled = true;
+        delete $next.dataset.passed;
         return;
       }
 
-      // Pass required
-      // Count pass only once per question per render
+      // passed
       if(!$next.dataset.passed){
         passedCount++;
         passedEl.textContent = String(passedCount);
         $next.dataset.passed = "1";
       }
 
-      // Build feedback sections
-      let msg = `✅ 通過（必要條件）\n✅ Passed (Required Rules)\n\n你的句子：${raw.trim()}\n`;
+      let msg =
+        `✅ 通過！（嚴格模式）\n✅ Passed! (Strict Mode)\n\n你的句子：${res.raw}\n`;
 
-      if(result.bonusHits.length){
-        const zh = result.bonusHits.map(x=>`- ${x.zh}`).join("\n");
-        const en = result.bonusHits.map(x=>`- ${x.en}`).join("\n");
-        msg += `\n🌟 加分點 Bonus\n【中文】\n${zh}\n【English】\n${en}\n`;
+      if(res.bonus.length){
+        msg += `\n🌟 加分點 Bonus\n- 逗號/結構使用自然。\n- Comma/structure is natural.\n`;
       }else{
-        msg += `\n🌟 加分點 Bonus\n（目前沒有加分點，但已經正確。）\n(No bonus points yet, but it is correct.)\n`;
-      }
-
-      if(result.adviceHits.length){
-        const zh = result.adviceHits.map(x=>`- ${x.zh}`).join("\n");
-        const en = result.adviceHits.map(x=>`- ${x.en}`).join("\n");
-        msg += `\n💡 建議 Suggestions\n【中文】\n${zh}\n【English】\n${en}\n`;
+        msg += `\n🌟 加分點 Bonus\n（沒有加分點，但已經完全正確。）\n(No bonus points, but it is fully correct.)\n`;
       }
 
       $fb.className = "feedback ok";
@@ -804,13 +682,16 @@
       }else{
         card.innerHTML = `
           <div class="feedback ok" style="display:block;">
-            🎉 你已完成第四課練習一（輸入＋檢查＋語法說明）！<br>
+            🎉 你已完成第四課練習一（嚴格檢查版）！<br>
             ✅ 通過題數：${passedCount} / ${QUESTIONS.length}<br><br>
-            你可以再練一次，試著把句子寫得更自然（用到更多加分點）。
+            建議：再練一次，試著寫得更自然、內容更完整。
+            <div style="margin-top:6px; font-size:13px; font-weight:850;">
+              Tip: Try again and make your sentence more natural and complete.
+            </div>
           </div>
           <div class="actions" style="justify-content:flex-end; margin-top:12px;">
             <button class="btn secondary" id="againBtn">再練一次 Practice Again</button>
-            <button class="btn" id="grammarBankBtn">查看語法說明 View Grammar</button>
+            <button class="btn" id="grammarBankBtn">查看語法 View Grammar</button>
           </div>
         `;
         document.getElementById("againBtn").onclick = () => {
@@ -819,7 +700,7 @@
           render();
         };
         document.getElementById("grammarBankBtn").onclick = () => openModal("jishi");
-      };
+      }
     };
   }
 
